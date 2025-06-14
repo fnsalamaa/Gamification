@@ -22,6 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'class',
+        'profile_photo_path',
     ];
 
     /**
@@ -45,5 +47,11 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // Jika ingin ambil satu role (jika hanya satu role per user)
+    public function getRoleNameAttribute()
+    {
+        return $this->roles->pluck('name')->first(); // ambil role pertama
     }
 }

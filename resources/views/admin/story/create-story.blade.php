@@ -3,15 +3,15 @@
 
 @section('content')
   <div class="container-fluid mt-4">
-    <div class="row mb-4">
-    <div class="col">
-      <h2>Manage Story</h2>
-      <p class="text-muted">Selamat datang di panel admin.</p>
-    </div>
-    </div>
+    <div class="mb-6">
+      <div class="mb-6">
+            <h2 class="text-3xl font-extrabold text-gray-800">Manage Story</h2>
+            <p class="text-gray-500 mt-1">Manage Story Detail.</p>
+        </div>
+   </div>
     {{-- Header dan Tombol --}}
     <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Daftar Story</h2>
+
     <button type="button" data-bs-toggle="modal" data-bs-target="#addStoryModal"
       class="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">+
       Add Story Title</button>
@@ -65,7 +65,7 @@
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
       <thead class="text-center text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-      <tr>
+      <tr class="text-center">
         <th scope="col" class="px-6 py-3">
         No
         </th>
@@ -101,19 +101,20 @@
         </a>
 
         <a href="{{ route('admin.edit-story', $story->id) }}"
-        class="inline-block text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-md text-xs px-3 py-1.5 text-center me-2 mb-2">
-        Edit
-        </a>
+    class="inline-block text-white bg-yellow-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-md text-xs px-3 py-1.5 text-center me-2 mb-2">
+    Edit
+</a>
 
-        <form action="{{ route('admin.delete-story', $story->id) }}" method="POST" class="inline delete-form">
-        @csrf
-        @method('DELETE')
-        <button type="button"
-        class="btn-delete-story inline-block text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-md text-xs px-3 py-1.5 text-center me-2 mb-2"
+<form action="{{ route('admin.delete-story', $story->id) }}" method="POST" class="inline delete-form">
+    @csrf
+    @method('DELETE')
+    <button type="button"
+        class="btn-delete-story inline-block text-white bg-red-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-md text-xs px-3 py-1.5 text-center me-2 mb-2"
         data-story-id="{{ $story->id }}">
         Delete
-        </button>
-        </form>
+    </button>
+</form>
+
 
       </tr>
     @endforeach

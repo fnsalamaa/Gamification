@@ -2,14 +2,15 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Middleware\administrator; 
+use App\Http\Middleware\administrator;
 use App\Http\Controllers\admin\DashBoardController;
 use App\Http\Controllers\admin\StoryController;
 use App\Http\Controllers\admin\QuestionController;
+use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\student\StudentController;
 use App\Http\Controllers\Student\ChooseStoryController;
 
-use Spatie\Permission\Models\Role; 
+use Spatie\Permission\Models\Role;
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,7 +19,7 @@ Route::get('/', function () {
 //Admin
 Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/dashboard', [DashBoardController::class, 'index'])->name('admin.dashboard');
-    
+
     // Story
     Route::get('/create-story', [StoryController::class, 'index'])->name('admin.create-story');
     Route::post('/store-story', [StoryController::class, 'store'])->name('admin.store-story');
@@ -32,6 +33,16 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     Route::get('/questions/{id}/edit', [QuestionController::class, 'edit'])->name('admin.questions.edit');
     Route::put('/questions/{id}', [QuestionController::class, 'update'])->name('admin.questions.update');
     Route::delete('/questions/{id}', [QuestionController::class, 'destroy'])->name('admin.questions.destroy');
+
+    // Manage user
+    Route::get('/users', [UserController::class, 'index'])->name('admin.users.show-users');
+    Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
+    Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
+    Route::put('/users/{id}', [UserController::class, 'update'])->name('admin.users.update');
+    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+
+
+
 });
 
 // Student
@@ -48,4 +59,4 @@ Route::prefix('student')->middleware(['auth', 'verified', 'role:user'])->group(f
 
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
