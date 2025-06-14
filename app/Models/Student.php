@@ -10,7 +10,9 @@ class Student extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'total_score', 'weekly_score',
+        'user_id',
+        'total_score',
+        'weekly_score',
     ];
 
     public function user()
@@ -41,5 +43,15 @@ class Student extends Model
     public function selectedAvatar()
     {
         return $this->hasOne(StudentAvatar::class)->where('is_selected', true);
+    }
+
+    public function attempts()
+    {
+        return $this->hasMany(Attempt::class);
+    }
+
+    public function totalPoints()
+    {
+        return $this->attempts()->sum('point');
     }
 }
