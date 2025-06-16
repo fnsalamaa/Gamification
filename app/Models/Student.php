@@ -11,6 +11,7 @@ class Student extends Model
 
     protected $fillable = [
         'user_id',
+        'name',           // ✅ tambahkan ini
         'class',
         'total_score',
         'weekly_score',
@@ -31,10 +32,14 @@ class Student extends Model
         return $this->hasMany(StudentAnswer::class);
     }
 
+
     public function badges()
     {
-        return $this->hasMany(StudentBadge::class);
+        return $this->belongsToMany(Badge::class, 'student_badges')
+            ->withPivot('awarded_at')
+            ->withTimestamps();
     }
+
 
     public function avatars()
     {

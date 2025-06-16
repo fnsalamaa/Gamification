@@ -2,7 +2,8 @@
 
 @section('content')
 <div class="max-w-5xl mx-auto p-6">
-    <h1 class="text-3xl font-bold mb-6 text-center text-purple-700">Choose Your Avatar</h1>
+    <h1 class="text-3xl font-bold mb-6 text-center text-purple-700">🧙 Choose Your Avatar</h1>
+    
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
         @foreach ($avatars as $avatar)

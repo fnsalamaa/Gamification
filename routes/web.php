@@ -11,6 +11,7 @@ use App\Http\Controllers\student\StudentController;
 use App\Http\Controllers\Student\ChooseStoryController;
 use App\Http\Controllers\Student\StudentAnswerController;
 use App\Http\Controllers\Student\StudentAvatarController;
+use App\Http\Controllers\Student\BadgeController;
 
 use Spatie\Permission\Models\Role;
 
@@ -62,6 +63,14 @@ Route::prefix('student')->middleware(['auth', 'verified', 'role:user'])->group(f
     // Avatar
     Route::get('/choose-avatar', [StudentAvatarController::class, 'index'])->name('student.avatar.choose');
     Route::post('/choose-avatar/{id}', [StudentAvatarController::class, 'select'])->name('student.avatar.select');
+
+    // Badges
+    Route::get('/choose-badge', [BadgeController::class, 'index'])->name('student.badge.choose');
+    
+    // Profile
+     Route::get('/profile/edit', [StudentController::class, 'editProfile'])->name('student.profile.edit');
+    Route::post('/profile/update', [StudentController::class, 'updateProfile'])->name('student.profile.update');
+
 });
 
 
