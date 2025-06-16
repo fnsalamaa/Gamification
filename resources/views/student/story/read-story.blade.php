@@ -21,7 +21,7 @@
 
                     <template x-for="(question, index) in stage.questions" :key="question.id">
                         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                            <h3 class="text-lg font-semibold mb-2">Story <span x-text="index + 1"></span></h3>
+                            <h3 class="text-lg font-semibold mb-2">Narrative <span x-text="index + 1"></span></h3>
                             <template x-if="question.narrative">
                                 <p class="mb-3" x-text="question.narrative"></p>
                             </template>

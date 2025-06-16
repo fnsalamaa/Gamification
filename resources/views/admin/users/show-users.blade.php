@@ -78,7 +78,7 @@
                                                                             editUser.name = '{{ $user->name }}';
                                                                             editUser.email = '{{ $user->email }}';
                                                                             editUser.role = '{{ optional($user->roles->first())->name }}';
-                                                                            editUser.class = '{{ $user->class ?? '' }}';
+                                                                            editUser.class = '{{ optional($user->student)->class ?? '' }}';
                                                                         "
                                     class="bg-yellow-400 hover:bg-yellow-500 text-white text-xs font-semibold px-3 py-1.5 rounded-md shadow">
                                     Edit

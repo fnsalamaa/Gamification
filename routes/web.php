@@ -10,6 +10,7 @@ use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\student\StudentController;
 use App\Http\Controllers\Student\ChooseStoryController;
 use App\Http\Controllers\Student\StudentAnswerController;
+use App\Http\Controllers\Student\StudentAvatarController;
 
 use Spatie\Permission\Models\Role;
 
@@ -48,16 +49,21 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
 
 // Student
 Route::prefix('student')->middleware(['auth', 'verified', 'role:user'])->group(function () {
+    // Dashboard & Story
     Route::get('/dashboard', [StudentController::class, 'index'])->name('student.dashboard');
     Route::get('/choose-story', [ChooseStoryController::class, 'index'])->name('student.story.chooseStory');
     Route::get('/choose-story/{id}', [ChooseStoryController::class, 'show'])->name('student.story.show');
+
+    // Quiz
     Route::post('/submit-answer', [StudentAnswerController::class, 'submitAnswer'])->name('student.submit.answer');
     Route::get('/quiz/result/{story}', [StudentAnswerController::class, 'showStoryScore'])->name('student.quiz.result');
     Route::get('/quiz/overall-score', [StudentAnswerController::class, 'showOverallScore'])->name('student.quiz.overall-score');
 
-
-
+    // Avatar
+    Route::get('/choose-avatar', [StudentAvatarController::class, 'index'])->name('student.avatar.choose');
+    Route::post('/choose-avatar/{id}', [StudentAvatarController::class, 'select'])->name('student.avatar.select');
 });
+
 
 
 

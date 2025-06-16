@@ -11,6 +11,7 @@ class Student extends Model
 
     protected $fillable = [
         'user_id',
+        'class',
         'total_score',
         'weekly_score',
     ];
@@ -37,8 +38,11 @@ class Student extends Model
 
     public function avatars()
     {
-        return $this->hasMany(StudentAvatar::class);
+        return $this->belongsToMany(Avatar::class, 'student_avatars')
+            ->withPivot('is_unlocked', 'is_selected', 'unlocked_at')
+            ->withTimestamps();
     }
+
 
     public function selectedAvatar()
     {
@@ -54,4 +58,6 @@ class Student extends Model
     {
         return $this->attempts()->sum('point');
     }
+
+
 }

@@ -54,4 +54,11 @@ class User extends Authenticatable
     {
         return $this->roles->pluck('name')->first(); // ambil role pertama
     }
+
+    public function student()
+    {
+        return $this->hasOne(Student::class);
+    }
+
+
 }
