@@ -1,4 +1,4 @@
-@extends('student.layouts.app')
+@extends('teacher.layouts.app')
 
 @section('content')
 
@@ -6,7 +6,7 @@
     <div class="row mb-4">
     <div class="col">
       <h2>Dashboarrrd</h2>
-      <p class="text-muted">Selamat datang di student.</p>
+      <p class="text-muted">Selamat datang di teacher.</p>
     </div>
 {{-- 
     <p>Total Poin Kamu: {{ auth()->user()->student->totalPoints()

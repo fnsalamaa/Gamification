@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Teacher\TeacherController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\administrator;
 use App\Http\Controllers\admin\DashBoardController;
@@ -71,6 +72,20 @@ Route::prefix('student')->middleware(['auth', 'verified', 'role:user'])->group(f
      Route::get('/profile/edit', [StudentController::class, 'editProfile'])->name('student.profile.edit');
     Route::post('/profile/update', [StudentController::class, 'updateProfile'])->name('student.profile.update');
 
+});
+
+// Teacher
+Route::prefix('teacher')->middleware(['auth', 'verified', 'role:teacher'])->group(function () {
+    // Dashboard & Story
+    Route::get('/dashboard', [TeacherController::class, 'index'])->name('teacher.dashboard');
+
+    // Student
+    Route::get('/students', [TeacherController::class, 'showAllStudents'])->name('teacher.students.show');
+    
+
+    // Halaman  story
+     Route::get('/story', [TeacherController::class, 'showAllStories'])->name('teacher.story.index');
+    Route::get('/story/{id}', [TeacherController::class, 'showStoryDetail'])->name('teacher.story.detail');
 });
 
 

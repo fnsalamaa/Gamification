@@ -29,14 +29,14 @@
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
         <div class="w-64 flex-shrink-0">
-            @include('admin.layouts.sidebar')
+            @include('teacher.layouts.sidebar')
         </div>
 
         <!-- Main Content -->
         <div class="flex flex-col flex-1">
             <!-- Navbar -->
             <div class="sticky top-0 z-50">
-                @include('admin.layouts.navbar')
+                @include('teacher.layouts.navbar')
             </div>
 
             <!-- Content Area -->
