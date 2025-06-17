@@ -16,67 +16,67 @@ class ChooseStoryController extends Controller
 
     }
 
-//     public function choose($id)
-// {
-//     $story = Story::findOrFail($id);
-//     // Simpan pilihan ke session atau database, tergantung logika kamu
-//     session(['chosen_story_id' => $story->id]);
 
-//     return redirect()->route('student.story.read', $story->id);
+public function showQuiz(Request $request, Story $story)
+{
+    $stages = $story->stages()->with('questions')->get();
+    $completedStages = session('completed_stages_' . $story->id, [0]); // default stage 0 terbuka
+
+    return view('student.story.read-story', compact('story', 'stages', 'completedStages'));
+}
+
+// public function show($id)
+// {
+//     $story = Story::with('stages.questions')->findOrFail($id);
+//     $stages = $story->stages->sortBy('order'); // optional jika ingin diurutkan
+
+//     return view('student.story.read-story', compact('story', 'stages'));
 // }
 
-public function show($id)
-{
-    $story = Story::with('stages.questions')->findOrFail($id);
-    $stages = $story->stages->sortBy('order'); // optional jika ingin diurutkan
+// public function submitFinal($storyId)
+// {
+//     $student = auth()->user();
 
-    return view('student.story.read-story', compact('story', 'stages'));
-}
+//     // Hitung total skor dari semua jawaban siswa untuk story ini
+//     $totalScore = StudentAnswer::where('student_id', $student->id)
+//         ->whereHas('question.stage', function ($q) use ($storyId) {
+//             $q->where('story_id', $storyId);
+//         })
+//         ->sum('score_earned');
 
-public function submitFinal($storyId)
-{
-    $student = auth()->user();
+//     // (Opsional) tandai story sebagai selesai, bisa buat tabel student_story
 
-    // Hitung total skor dari semua jawaban siswa untuk story ini
-    $totalScore = StudentAnswer::where('student_id', $student->id)
-        ->whereHas('question.stage', function ($q) use ($storyId) {
-            $q->where('story_id', $storyId);
-        })
-        ->sum('score_earned');
+//     return redirect()->route('quiz.result', $storyId)
+//         ->with('success', "Kuis telah selesai! Skor total kamu: $totalScore");
+// }
 
-    // (Opsional) tandai story sebagai selesai, bisa buat tabel student_story
+// public function showResult($storyId)
+// {
+//     $student = auth()->user();
 
-    return redirect()->route('quiz.result', $storyId)
-        ->with('success', "Kuis telah selesai! Skor total kamu: $totalScore");
-}
+//     $answers = StudentAnswer::with('question')
+//         ->where('student_id', $student->id)
+//         ->whereHas('question.stage', function ($q) use ($storyId) {
+//             $q->where('story_id', $storyId);
+//         })
+//         ->get();
 
-public function showResult($storyId)
-{
-    $student = auth()->user();
+//     $totalScore = $answers->sum('score_earned');
+//     $totalQuestions = $answers->count();
+//     $correctAnswers = $answers->where('is_correct', true)->count();
+//     $incorrectAnswers = $answers->where('is_correct', false)->count();
 
-    $answers = StudentAnswer::with('question')
-        ->where('student_id', $student->id)
-        ->whereHas('question.stage', function ($q) use ($storyId) {
-            $q->where('story_id', $storyId);
-        })
-        ->get();
+//     $story = \App\Models\Story::findOrFail($storyId);
 
-    $totalScore = $answers->sum('score_earned');
-    $totalQuestions = $answers->count();
-    $correctAnswers = $answers->where('is_correct', true)->count();
-    $incorrectAnswers = $answers->where('is_correct', false)->count();
-
-    $story = \App\Models\Story::findOrFail($storyId);
-
-    return view('student.result', compact(
-        'story',
-        'totalScore',
-        'totalQuestions',
-        'correctAnswers',
-        'incorrectAnswers',
-        'answers'
-    ));
-}
+//     return view('student.result', compact(
+//         'story',
+//         'totalScore',
+//         'totalQuestions',
+//         'correctAnswers',
+//         'incorrectAnswers',
+//         'answers'
+//     ));
+// }
 
 
 }

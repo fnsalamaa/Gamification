@@ -16,7 +16,7 @@
             @foreach ($stories as $story)
                 <div
                     class="bg-white rounded-2xl shadow-md overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl">
-                    <a href="{{ route('student.story.show', $story->id) }}">
+                    <a href="{{ route('student.story.readStory', $story->id) }}">
                         <img src="{{ asset('storage/' . $story->cover) }}" alt="{{ $story->title }}"
                             class="w-full h-48 object-cover">
                         <div class="p-4">

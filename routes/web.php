@@ -13,6 +13,7 @@ use App\Http\Controllers\Student\ChooseStoryController;
 use App\Http\Controllers\Student\StudentAnswerController;
 use App\Http\Controllers\Student\StudentAvatarController;
 use App\Http\Controllers\Student\BadgeController;
+use App\Http\Controllers\Student\LeaderboardController;
 
 use Spatie\Permission\Models\Role;
 
@@ -53,23 +54,26 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
 Route::prefix('student')->middleware(['auth', 'verified', 'role:student'])->group(function () {
     // Dashboard & Story
     Route::get('/dashboard', [StudentController::class, 'index'])->name('student.dashboard');
+    // Route::get('/choose-story', [ChooseStoryController::class, 'index'])->name('student.story.chooseStory');
+    // Route::get('/choose-story/{id}', [ChooseStoryController::class, 'show'])->name('student.story.show');
+
+    // Quiz List semua story
     Route::get('/choose-story', [ChooseStoryController::class, 'index'])->name('student.story.chooseStory');
-    Route::get('/choose-story/{id}', [ChooseStoryController::class, 'show'])->name('student.story.show');
+    Route::get('/choose-story/{story}', [ChooseStoryController::class, 'showQuiz'])->name('student.story.readStory');
+    Route::post('/question/{question}/answer', [StudentController::class, 'submitAnswer'])->name('student.answer.submit');
 
-    // Quiz
-    Route::post('/submit-answer', [StudentAnswerController::class, 'submitAnswer'])->name('student.submit.answer');
-    Route::get('/quiz/result/{story}', [StudentAnswerController::class, 'showStoryScore'])->name('student.quiz.result');
-    Route::get('/quiz/overall-score', [StudentAnswerController::class, 'showOverallScore'])->name('student.quiz.overall-score');
-
-    // Avatar
+    // Leaderboard route
+    Route::get('/leaderboard/{story}', [LeaderboardController::class, 'show'])
+        ->name('student.leaderboard.show');
+    
     Route::get('/choose-avatar', [StudentAvatarController::class, 'index'])->name('student.avatar.choose');
     Route::post('/choose-avatar/{id}', [StudentAvatarController::class, 'select'])->name('student.avatar.select');
 
     // Badges
     Route::get('/choose-badge', [BadgeController::class, 'index'])->name('student.badge.choose');
-    
+
     // Profile
-     Route::get('/profile/edit', [StudentController::class, 'editProfile'])->name('student.profile.edit');
+    Route::get('/profile/edit', [StudentController::class, 'editProfile'])->name('student.profile.edit');
     Route::post('/profile/update', [StudentController::class, 'updateProfile'])->name('student.profile.update');
 
 });
@@ -81,10 +85,10 @@ Route::prefix('teacher')->middleware(['auth', 'verified', 'role:teacher'])->grou
 
     // Student
     Route::get('/students', [TeacherController::class, 'showAllStudents'])->name('teacher.students.show');
-    
+
 
     // Halaman  story
-     Route::get('/story', [TeacherController::class, 'showAllStories'])->name('teacher.story.index');
+    Route::get('/story', [TeacherController::class, 'showAllStories'])->name('teacher.story.index');
     Route::get('/story/{id}', [TeacherController::class, 'showStoryDetail'])->name('teacher.story.detail');
 });
 
