@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('student_id')->constrained()->onDelete('cascade');
             $table->foreignId('question_id')->constrained()->onDelete('cascade');
+            $table->unsignedTinyInteger('attempt')->default(1);
             $table->char('selected_option', 1);
             $table->boolean('is_correct')->default(false);
             $table->unsignedInteger('score_earned')->default(0);
@@ -30,5 +31,3 @@ return new class extends Migration {
         Schema::dropIfExists('student_answers');
     }
 };
-
-

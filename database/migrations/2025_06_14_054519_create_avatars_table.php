@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('avatars', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->text('description')->nullable();
             $table->string('image_path'); // path ke file avatar
             $table->string('unlock_condition')->nullable(); // misalnya "Selesaikan 3 cerita"
             $table->timestamps();
+
         });
     }
 

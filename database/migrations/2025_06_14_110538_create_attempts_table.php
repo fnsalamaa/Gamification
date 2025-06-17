@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('attempts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
             $table->foreignId('question_id')->constrained()->onDelete('cascade');
             $table->integer('attempt_number'); // 1, 2, atau 3
             $table->boolean('is_correct');

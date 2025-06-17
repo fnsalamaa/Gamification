@@ -18,7 +18,7 @@ return new class extends Migration
             $table->boolean('is_unlocked')->default(false);
             $table->boolean('is_selected')->default(false);
             $table->timestamp('unlocked_at')->nullable();
-
+            $table->timestamps();
         });
     }
 
