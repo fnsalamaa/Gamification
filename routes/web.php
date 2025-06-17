@@ -50,7 +50,7 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
 });
 
 // Student
-Route::prefix('student')->middleware(['auth', 'verified', 'role:user'])->group(function () {
+Route::prefix('student')->middleware(['auth', 'verified', 'role:student'])->group(function () {
     // Dashboard & Story
     Route::get('/dashboard', [StudentController::class, 'index'])->name('student.dashboard');
     Route::get('/choose-story', [ChooseStoryController::class, 'index'])->name('student.story.chooseStory');
@@ -87,12 +87,5 @@ Route::prefix('teacher')->middleware(['auth', 'verified', 'role:teacher'])->grou
      Route::get('/story', [TeacherController::class, 'showAllStories'])->name('teacher.story.index');
     Route::get('/story/{id}', [TeacherController::class, 'showStoryDetail'])->name('teacher.story.detail');
 });
-
-
-
-
-
-
-
 
 require __DIR__ . '/auth.php';
