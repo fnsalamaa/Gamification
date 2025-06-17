@@ -20,67 +20,73 @@
 
             {{-- Kanan: Avatar --}}
             {{-- Avatar Section di Dashboard --}}
-@if ($selectedAvatar)
-    <div class="text-center">
-        <h5 class="text-gray-600 mb-2 font-medium">Avatar Kamu</h5>
-        <div class="relative inline-block">
-            <img onclick="openModal()" src="{{ asset('storage/' . $selectedAvatar->image_path) }}" alt="Avatar"
-                class="w-28 h-28 rounded-full border-4 border-purple-300 shadow-lg transition hover:scale-105 cursor-pointer">
-        </div>
-        <p class="mt-2 font-semibold text-lg text-purple-800">{{ $selectedAvatar->name }}</p>
-    </div>
-@endif
+            @if ($selectedAvatar)
+                <div class="text-center">
+                    <h5 class="text-gray-600 mb-2 font-medium">Avatar Kamu</h5>
+                    <div class="relative inline-block">
+                        <img onclick="openModal()" src="{{ asset('storage/' . $selectedAvatar->image_path) }}"
+                            alt="Avatar"
+                            class="w-28 h-28 rounded-full border-4 border-purple-300 shadow-lg transition hover:scale-105 cursor-pointer">
+                    </div>
+                    <p class="mt-2 font-semibold text-lg text-purple-800">{{ $selectedAvatar->name }}</p>
+                </div>
+            @endif
 
-        
+
 
 
         </div>
 
         {{-- Modal Edit Profil --}}
-<div id="editProfileModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
-    <div class="bg-white rounded-xl p-6 w-full max-w-lg relative">
-        {{-- Tombol Close --}}
-        <button onclick="closeModal()" class="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-2xl">&times;</button>
+        <div id="editProfileModal"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+            <div class="bg-white rounded-xl p-6 w-full max-w-lg relative">
+                {{-- Tombol Close --}}
+                <button onclick="closeModal()"
+                    class="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-2xl">&times;</button>
 
-        <h2 class="text-xl font-bold mb-4 text-purple-700">Edit Profil</h2>
+                <h2 class="text-xl font-bold mb-4 text-purple-700">Edit Profil</h2>
 
-        <form method="POST" action="{{ route('student.profile.update') }}">
-            @csrf
+                <form method="POST" action="{{ route('student.profile.update') }}">
+                    @csrf
 
-            {{-- Nama --}}
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700">Nama</label>
-                <input type="text" name="name" value="{{ old('name', $user->name) }}" class="w-full p-2 border rounded-lg" required>
+                    {{-- Nama --}}
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700">Nama</label>
+                        <input type="text" name="name" value="{{ old('name', $user->name) }}"
+                            class="w-full p-2 border rounded-lg" required>
+                    </div>
+
+                    {{-- Kelas --}}
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700">Kelas</label>
+                        <input type="text" name="class" value="{{ old('class', $student->class) }}"
+                            class="w-full p-2 border rounded-lg" required>
+                    </div>
+
+                    {{-- Pilih Avatar --}}
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700">Pilih Avatar</label>
+                        <div class="flex flex-wrap gap-4">
+                            @foreach ($student->avatars->where('pivot.is_unlocked', true) as $avatar)
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="avatar_id" value="{{ $avatar->id }}"
+                                        {{ $avatar->pivot->is_selected ? 'checked' : '' }}>
+                                    <img src="{{ asset('storage/' . $avatar->image_path) }}"
+                                        class="w-16 h-16 rounded-full border-2 border-purple-400 hover:scale-105 transition">
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="text-right">
+                        <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                            Simpan
+                        </button>
+                    </div>
+                </form>
             </div>
-
-            {{-- Kelas --}}
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700">Kelas</label>
-                <input type="text" name="class" value="{{ old('class', $student->class) }}" class="w-full p-2 border rounded-lg" required>
-            </div>
-
-            {{-- Pilih Avatar --}}
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700">Pilih Avatar</label>
-                <div class="flex flex-wrap gap-4">
-                    @foreach ($student->avatars->where('pivot.is_unlocked', true) as $avatar)
-                        <label class="cursor-pointer">
-                            <input type="radio" name="avatar_id" value="{{ $avatar->id }}"
-                                {{ $avatar->pivot->is_selected ? 'checked' : '' }}>
-                            <img src="{{ asset('storage/' . $avatar->image_path) }}" class="w-16 h-16 rounded-full border-2 border-purple-400 hover:scale-105 transition">
-                        </label>
-                    @endforeach
-                </div>
-            </div>
-
-            <div class="text-right">
-                <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
-                    Simpan
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+        </div>
 
 
         {{-- Tambahan konten dashboard lain di bawah --}}
@@ -200,13 +206,11 @@
         document.getElementById('badgeModal').classList.add('hidden');
     }
 
-     function openModal() {
+    function openModal() {
         document.getElementById('editProfileModal').classList.remove('hidden');
     }
 
     function closeModal() {
         document.getElementById('editProfileModal').classList.add('hidden');
     }
-
-
 </script>
