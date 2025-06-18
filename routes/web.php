@@ -93,6 +93,10 @@ Route::prefix('teacher')->middleware(['auth', 'verified', 'role:teacher'])->grou
     // Halaman  story
     Route::get('/story', [TeacherController::class, 'showAllStories'])->name('teacher.story.index');
     Route::get('/story/{id}', [TeacherController::class, 'showStoryDetail'])->name('teacher.story.detail');
+
+     // Leaderboard
+    Route::get('/leaderboard', [TeacherController::class, 'showLeaderboard'])->name('teacher.leaderboard');
+
 });
 
 require __DIR__ . '/auth.php';

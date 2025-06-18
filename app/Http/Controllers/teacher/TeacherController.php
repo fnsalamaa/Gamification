@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\Story;
 use App\Models\Question;
+use App\Models\StudentAnswer;
+
+
 class TeacherController extends Controller
 {
     public function index()
@@ -37,5 +40,49 @@ class TeacherController extends Controller
 
         return view('teacher.story.detail-story', compact('story', 'questions'));
     }
+
+    public function showLeaderboard(Request $request)
+    {
+        $type = $request->query('type', 'story');
+
+        if ($type === 'global') {
+            $students = Student::with('user')
+                ->withSum('studentAnswers', 'score_earned')
+                ->orderByDesc('student_answers_sum_score_earned')
+                ->get();
+
+            return view('teacher.leaderboard.index', compact('type', 'students'));
+        } else {
+            $selectedStoryId = $request->query('story_id');
+            $stories = Story::all();
+
+            $storyScores = [];
+
+            if ($selectedStoryId) {
+                $story = Story::findOrFail($selectedStoryId);
+
+                $studentScores = StudentAnswer::select('student_id')
+                    ->selectRaw('SUM(score_earned) as total_score')
+                    ->whereHas('question.stage', function ($query) use ($story) {
+                        $query->where('story_id', $story->id);
+                    })
+                    ->groupBy('student_id')
+                    ->with('student.user')
+                    ->orderByDesc('total_score')
+                    ->get();
+
+                $storyScores[] = [
+                    'story' => $story,
+                    'students' => $studentScores
+                ];
+            }
+
+            return view('teacher.leaderboard.index', compact('type', 'stories', 'storyScores', 'selectedStoryId'));
+        }
+    }
+
+
+
+
 
 }

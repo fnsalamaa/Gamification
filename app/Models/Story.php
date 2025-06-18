@@ -17,4 +17,12 @@ class Story extends Model
     {
         return $this->hasMany(Stage::class);
     }
+
+    public function students()
+    {
+        return $this->belongsToMany(Student::class, 'student_answers')
+            ->withPivot('score')
+            ->withTimestamps();
+    }
+
 }

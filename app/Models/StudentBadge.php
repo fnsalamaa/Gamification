@@ -9,7 +9,8 @@ class StudentBadge extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['student_id', 'badge_id', 'awarded_at'];
+    protected $fillable = ['student_id', 'badge_id', 'is_unlocked', 'unlocked_at', 'awarded_at'];
+
 
     public function student()
     {

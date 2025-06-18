@@ -1,16 +1,16 @@
 @extends('student.layouts.app')
 
 @section('content')
-<div class="container mx-auto mt-8 px-4">
+<div class="container mx-auto mt-8 px-4 max-w-screen-xl">
     {{-- Card Atas: Info dan Avatar --}}
     <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col md:flex-row items-center justify-between gap-6">
         {{-- Kiri --}}
         <div class="flex-1">
             <h2 class="text-3xl font-bold text-purple-700 mb-2">Halo, {{ $student->user->name }}!</h2>
-            <p class="text-gray-600">Selamat datang di dashboard kamu. Semangat belajar dan selesaikan cerita menarik!</p>
+            <p class="text-gray-600">This is your safe zone. Prepare yourself and start your journey from here. Ati-ati ing dalan! </p>
             <div class="mt-4">
                 <div class="bg-purple-100 text-purple-800 inline-block px-4 py-2 rounded-full text-sm font-semibold">
-                    Total Skor:  {{ $student->total_score ?? 0 }} | Mingguan: {{ $student->weekly_score }}
+                    Total Skor:  {{ $student->total_score ?? 0 }} | Weekly: {{ $student->weekly_score }}
                 </div>
             </div>
         </div>
@@ -18,7 +18,7 @@
         {{-- Kanan --}}
         @if ($selectedAvatar)
         <div class="text-center">
-            <h5 class="text-gray-600 mb-2 font-medium">Avatar Kamu</h5>
+            <h5 class="text-gray-600 mb-2 font-medium">Your Avatar</h5>
             <div class="relative inline-block">
                 <img onclick="openModal()" src="{{ asset('storage/' . $selectedAvatar->image_path) }}"
                     alt="Avatar"
@@ -33,35 +33,36 @@
     <div id="editProfileModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white rounded-xl p-6 w-full max-w-lg relative">
             <button onclick="closeModal()" class="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-2xl">&times;</button>
-            <h2 class="text-xl font-bold mb-4 text-purple-700">Edit Profil</h2>
+            <h2 class="text-xl font-bold mb-4 text-purple-700">Edit Profile</h2>
             <form method="POST" action="{{ route('student.profile.update') }}">
                 @csrf
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Nama</label>
+                    <label class="block text-sm font-medium text-gray-700">Name</label>
                     <input type="text" name="name" value="{{ old('name', $user->name) }}"
                         class="w-full p-2 border rounded-lg" required>
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Kelas</label>
+                    <label class="block text-sm font-medium text-gray-700">Class</label>
                     <input type="text" name="class" value="{{ old('class', $student->class) }}"
                         class="w-full p-2 border rounded-lg" required>
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Pilih Avatar</label>
+                    <label class="block text-sm font-medium text-gray-700">Choose Avatar</label>
                     <div class="flex flex-wrap gap-4">
                         @foreach ($student->avatars->where('pivot.is_unlocked', true) as $avatar)
                         <label class="cursor-pointer">
                             <input type="radio" name="avatar_id" value="{{ $avatar->id }}"
-                                {{ $avatar->pivot->is_selected ? 'checked' : '' }}>
+                                {{ $avatar->pivot->is_selected ? 'checked' : '' }}
+                                class="hidden peer">
                             <img src="{{ asset('storage/' . $avatar->image_path) }}"
-                                class="w-16 h-16 rounded-full border-2 border-purple-400 hover:scale-105 transition">
+                                class="w-16 h-16 rounded-full border-2 border-purple-400 hover:scale-105 transition peer-checked:ring-4 peer-checked:ring-purple-500">
                         </label>
                         @endforeach
                     </div>
                 </div>
                 <div class="text-right">
                     <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
-                        Simpan
+                        Save
                     </button>
                 </div>
             </form>
@@ -85,7 +86,7 @@
                     <p class="text-sm text-white/90">Begin your exciting folklore adventure!</p>
                 </div>
             </div>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 mt-4">
+            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
                 @foreach ($stories as $story)
                 <div class="text-center">
                     <button onclick="showStoryDetail(`{{ e($story->title) }}`, `{{ e($story->description) }}`)"
@@ -100,7 +101,9 @@
         </a>
 
         {{-- Badge --}}
+        
         <div class="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300">
+            <a href="{{ route('student.badge.choose') }}">
             <div class="flex items-center gap-4 mb-4">
                 <div class="bg-white text-yellow-600 p-3 rounded-full shadow-md">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="size-6">
@@ -123,62 +126,47 @@
                 </button>
                 @endforeach
             </div>
+             </a>
         </div>
+   
 
         {{-- Leaderboard --}}
-        {{-- Leaderboard Card --}}
-<div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 p-6">
-    <a href="{{ route('student.leaderboard.global') }}">
-        <h3 class="text-2xl font-extrabold text-indigo-700 mb-4">🌟 Top Global Players</h3>
+        <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 p-6">
+            <a href="{{ route('student.leaderboard.global') }}">
+                <h3 class="text-2xl font-extrabold text-indigo-700 mb-4">🌟 Top Global Players</h3>
 
-        @php
-            $colors = ['bg-yellow-400', 'bg-gray-400', 'bg-orange-400'];
-            $heights = [2 => 'h-32', 0 => 'h-28', 1 => 'h-24'];
-            $order = [1, 0, 2];
-        @endphp
-
-        {{-- TOP 3 (dengan podium) --}}
-        <div class="flex justify-center items-end gap-6 mb-6">
-            @foreach ($order as $i)
-                @if (isset($globalStudents[$i]))
-                    @php
-                        $student = $globalStudents[$i];
-                        $avatarPath = $student->selectedAvatarModel?->first()?->image_path ?? 'default-avatar.png';
-                        $emoji = ['🥇', '🥈', '🥉'][$i] ?? '';
-                    @endphp
-                    <div class="flex flex-col items-center">
-                        <img src="{{ asset('storage/' . $avatarPath) }}" class="w-16 h-16 rounded-full border-4 border-white shadow-md">
-                        <div class="mt-2 font-semibold text-gray-800 text-center">{{ $student->user->name }}</div>
-                        <div class="text-xs text-gray-500 mb-2">Score: {{ $student->total_score }}</div>
-                        <div class="w-20 {{ $heights[$i] }} {{ $colors[$i] }} rounded-t-md shadow-md flex items-end justify-center text-white font-bold text-xl">
-                            {{ $emoji }}
-                        </div>
-                    </div>
-                @endif
-            @endforeach
-        </div>
-
-        {{-- RANK 4+ (dengan card, bukan tabel) --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            @foreach ($globalStudents->skip(3) as $index => $student)
                 @php
-                    $avatarPath = $student->selectedAvatarModel?->first()?->image_path ?? 'default-avatar.png';
+                    $topThree = $globalStudents->take(3);
+                    $visualOrder = [1, 0, 2];
+                    $colors = ['bg-yellow-400', 'bg-gray-400', 'bg-orange-400'];
+                    $heights = ['h-32', 'h-28', 'h-24'];
+                    $emojis = ['🥇', '🥈', '🥉'];
                 @endphp
-                <div class="flex items-center bg-indigo-50 hover:bg-indigo-100 transition rounded-xl p-4 shadow">
-                    <img src="{{ asset('storage/' . $avatarPath) }}" class="w-12 h-12 rounded-full border-2 border-white shadow mr-4">
-                    <div class="flex-1">
-                        <div class="font-semibold text-indigo-700">{{ $student->user->name }}</div>
-                        <div class="text-sm text-gray-600">Score: {{ $student->total_score }}</div>
-                    </div>
-                    <div class="text-sm font-bold text-indigo-800">
-                        #{{ $index + 4 }}
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    </a>
-</div>
 
+                <div class="flex flex-row justify-center items-end gap-4 sm:gap-6 mb-6 overflow-x-auto">
+                    @foreach ($visualOrder as $rankIndex)
+                    @php $student = $topThree[$rankIndex] ?? null; @endphp
+                    @if ($student)
+                    @php
+                        $avatarPath = $student->selectedAvatarModel?->first()?->image_path ?? 'default-avatar.png';
+                    @endphp
+                    <div class="flex flex-col items-center w-20 sm:w-24">
+                <img src="{{ asset('storage/' . $avatarPath) }}" class="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-4 border-white shadow-md">
+                <div class="mt-2 text-xs sm:text-sm font-semibold text-gray-800 text-center truncate max-w-[5rem] sm:max-w-[6rem]">
+                    {{ $student->user->name }}
+                </div>
+                <div class="text-[10px] sm:text-xs text-gray-500 mb-2">Score: {{ $student->total_score }}</div>
+                <div class="w-16 sm:w-20 {{ $heights[$rankIndex] }} {{ $colors[$rankIndex] }} rounded-t-md shadow-md flex items-end justify-center text-white font-bold text-lg sm:text-xl">
+                    {{ $emojis[$rankIndex] }}
+                </div>
+                </div>
+                @endif
+                @endforeach
+        </div>
+
+                
+            </a>
+        </div>
     </div>
 
     {{-- Modal Badge --}}

@@ -14,14 +14,14 @@
 
             <div class="flex items-center gap-4">
                 <label class="text-sm font-semibold text-indigo-800 flex items-center">
-                    <span class="mr-2">📖 Pilih Story:</span>
+                    <span class="mr-2">📖 Choose Story:</span>
                 </label>
 
                 <div class="relative">
                     <select
                         onchange="if(this.value) window.location.href = '{{ url('student/leaderboard') }}/' + this.value"
                         class="appearance-none bg-gradient-to-r from-purple-200 via-indigo-200 to-blue-200 text-indigo-900 font-semibold py-2 pl-4 pr-10 rounded-full border-2 border-indigo-300 shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-400 text-sm transition-all duration-300">
-                        <option value="">🌍 Semua Story</option>
+                        <option value="">🌍 All Story</option>
                         @foreach ($allStories as $s)
                             <option value="{{ $s->id }}">{{ $s->title }}</option>
                         @endforeach
@@ -108,7 +108,7 @@
                                             <div class="font-medium text-gray-800">
                                                 {{ $student['name'] }}
                                             </div>
-                                            <span class="text-xs text-gray-500">Class: {{ $student['class'] ?? '-' }}</span>
+                                            
                                         </div>
                                     </td>
                                     <td class="px-4 py-3 text-right font-semibold text-indigo-700">

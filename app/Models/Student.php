@@ -33,12 +33,18 @@ class Student extends Model
     }
 
 
+    public function stories()
+    {
+        return $this->belongsToMany(\App\Models\Story::class, 'student_answers', 'student_id', 'story_id')->distinct();
+    }
+
     public function badges()
     {
         return $this->belongsToMany(Badge::class, 'student_badges')
-            ->withPivot('awarded_at')
+            ->withPivot(['is_unlocked', 'unlocked_at', 'awarded_at'])
             ->withTimestamps();
     }
+
 
 
     public function avatars()
@@ -64,5 +70,10 @@ class Student extends Model
         return $this->attempts()->sum('point');
     }
 
+
+    public function studentAnswers()
+{
+    return $this->hasMany(StudentAnswer::class);
+}
 
 }

@@ -9,8 +9,11 @@ use App\Models\Story;
 use App\Models\StudentAnswer;
 use App\Models\Question;
 use App\Models\Student;
+use App\Traits\ChecksBadgeUnlock;
+
 class StudentController extends Controller
 {
+    use ChecksBadgeUnlock;
 
     public function index()
     {
@@ -24,6 +27,9 @@ class StudentController extends Controller
             ], 'score_earned')
             ->where('user_id', $user->id)
             ->firstOrFail();
+
+        // 🔓 Cek dan unlock badge di sini
+        $this->checkAndUnlockBadges($student);
 
         $selectedAvatar = $student->avatars()->wherePivot('is_selected', true)->first();
         $ownedBadges = $student->badges;
@@ -102,16 +108,16 @@ class StudentController extends Controller
             ->where('question_id', $question->id)
             ->count();
 
-         // Cek apakah sudah mencoba 3 kali
-    if ($attempt >= 3) {
-        // Redirect langsung ke soal berikutnya
-        $story = $question->stage->story;
-        return redirect()->route('student.story.readStory', [
-            'story' => $story->id,
-            'stage' => request('stage'),
-            'question' => request('question') + 1
-        ])->with('error', '❌ Kamu sudah mencoba 3 kali. Lanjut ke soal berikutnya!');
-    }
+        // Cek apakah sudah mencoba 3 kali
+        if ($attempt >= 3) {
+            // Redirect langsung ke soal berikutnya
+            $story = $question->stage->story;
+            return redirect()->route('student.story.readStory', [
+                'story' => $story->id,
+                'stage' => request('stage'),
+                'question' => request('question') + 1
+            ])->with('error', '❌ Kamu sudah mencoba 3 kali. Lanjut ke soal berikutnya!');
+        }
 
 
         $selected = $request->selected_option;
