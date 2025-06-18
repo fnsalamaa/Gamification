@@ -21,5 +21,5 @@ class StudentAvatar extends Model
     public function avatar()
     {
         return $this->belongsTo(Avatar::class);
-    }
+    }   
 }

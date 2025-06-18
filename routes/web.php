@@ -65,7 +65,10 @@ Route::prefix('student')->middleware(['auth', 'verified', 'role:student'])->grou
     // Leaderboard route
     Route::get('/leaderboard/{story}', [LeaderboardController::class, 'show'])
         ->name('student.leaderboard.show');
+    Route::get('/leaderboard-global', [LeaderboardController::class, 'global'])
+    ->name('student.leaderboard.global');
     
+    // Avatars
     Route::get('/choose-avatar', [StudentAvatarController::class, 'index'])->name('student.avatar.choose');
     Route::post('/choose-avatar/{id}', [StudentAvatarController::class, 'select'])->name('student.avatar.select');
 

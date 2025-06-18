@@ -1,6 +1,11 @@
 @extends('admin.layouts.app')
 
 @section('content')
+ @if(session('success'))
+            <div class="mb-4 p-3 bg-green-100 text-green-700 rounded">
+                {{ session('success') }}
+            </div>
+        @endif
     <div x-data="{
                                         open: false,
                                         openEdit: false,
@@ -65,7 +70,7 @@
                             <td class="px-6 py-4 text-sm text-gray-600">{{ $user->email }}</td>
                             <td class="px-6 py-4 text-sm text-gray-600 capitalize">
                                 @php
-                                    $roleMap = ['admin' => 'Admin', 'teacher' => 'Teacher', 'user' => 'Student'];
+                                    $roleMap = ['admin' => 'Admin', 'teacher' => 'Teacher', 'student' => 'Student'];
                                     $displayRoles = $user->roles->pluck('name')->map(fn($r) => $roleMap[$r] ?? $r)->join(', ');
                                 @endphp
                                 {{ $displayRoles ?: '-' }}
@@ -174,12 +179,12 @@
                                 <option value="" disabled selected>-- Select Role --</option>
                                 <option value="admin">Admin</option>
                                 <option value="teacher">Teacher</option>
-                                <option value="user">Student</option>
+                                <option value="student">Student</option>
                             </select>
                         </div>
 
                         <!-- Input class muncul hanya jika role == student -->
-                        <div x-show="role === 'user'" class="transition-all">
+                        <div x-show="role === 'student'" class="transition-all">
                             <label class="block text-sm font-medium">Class</label>
                             <input type="text" name="class" class="w-full border-gray-300 rounded-lg p-2" />
                         </div>
@@ -227,11 +232,11 @@
                                 <option value="" disabled>-- Select Role --</option>
                                 <option value="admin">Admin</option>
                                 <option value="teacher">Teacher</option>
-                                <option value="user">Student</option>
+                                <option value="student">Student</option>
                             </select>
                         </div>
 
-                        <div x-show="editUser.role === 'user'" class="transition-all">
+                        <div x-show="editUser.role === 'student'" class="transition-all">
                             <label class="block text-sm font-medium">Class</label>
                             <input type="text" name="class" x-model="editUser.class"
                                 class="w-full border-gray-300 rounded-lg p-2" />
@@ -251,11 +256,7 @@
         </div>
 
 
-        @if(session('success'))
-            <div class="mb-4 p-3 bg-green-100 text-green-700 rounded">
-                {{ session('success') }}
-            </div>
-        @endif
+       
 
     </div>
 @endsection

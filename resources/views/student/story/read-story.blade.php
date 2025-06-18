@@ -2,6 +2,15 @@
 
 @section('content')
 
+    @if (session('success'))
+        <div class="mt-4 p-4 rounded-lg bg-green-100 border border-green-300 text-green-800 font-semibold">
+            ✅ {{ session('success') }}
+        </div>
+    @elseif (session('error'))
+        <div class="mt-4 p-4 rounded-lg bg-red-100 border border-red-300 text-red-800 font-semibold">
+             {{ session('error') }}
+        </div>
+    @endif
 
     <div class="max-w-3xl mx-auto px-4 py-8">
 
@@ -55,7 +64,7 @@
 
                 <div class="group text-center">
                     <a href="{{ $isUnlocked ? request()->fullUrlWithQuery(['stage' => $index, 'question' => 0]) : '#' }}" class="block w-20 h-20 rounded-xl transition shadow-md p-2 transform hover:scale-105
-                                                                                                                                                                                        {{ $isActive
+                                                                                                                                                                                                        {{ $isActive
                 ? 'bg-indigo-600 text-white border-2 border-indigo-700'
                 : ($isUnlocked
                     ? 'bg-white text-indigo-700 border border-indigo-300 hover:bg-indigo-100'
@@ -168,21 +177,13 @@
 
             </form>
 
-            @if (session('success'))
-                <div class="mt-4 p-4 rounded-lg bg-green-100 border border-green-300 text-green-800 font-semibold">
-                    ✅ {{ session('success') }}
-                </div>
-            @elseif (session('error'))
-                <div class="mt-4 p-4 rounded-lg bg-red-100 border border-red-300 text-red-800 font-semibold">
-                    ❌ {{ session('error') }}
-                </div>
-            @endif
+
 
 
 
 
             {{-- Navigation Buttons --}}
-        
+
             <div class="flex justify-between mt-6">
                 {{-- Tombol Sebelumnya --}}
                 @if ($questionIndex > 0)
@@ -196,8 +197,8 @@
 
                 {{-- Tombol Berikutnya atau Selesai --}}
                 @if ($questionIndex + 1 < $totalQuestions)
-                    {{-- Kalau masih ada soal berikutnya --}}
-                    @if ($hasAnswered)
+                    {{-- Tombol Next --}}
+                    @if ($answer && ($answer->is_correct || $answer->attempt >= 3))
                         <a href="{{ request()->fullUrlWithQuery(['question' => $questionIndex + 1]) }}"
                             class="ml-auto bg-indigo-500 hover:bg-indigo-600 text-white font-semibold px-4 py-2 rounded shadow">
                             Next ➡️
@@ -205,32 +206,24 @@
                     @else
                         <button disabled
                             class="ml-auto bg-gray-300 text-gray-500 font-semibold px-4 py-2 rounded shadow cursor-not-allowed">
-                            📌 Jawab dulu sebelum lanjut
+                            📌 Jawab dulu sampai benar
                         </button>
                     @endif
                 @else
-                    {{-- Ini adalah soal terakhir --}}
-                    @if ($hasAnswered)
-                        @if ($stageIndex + 1 < count($stages))
-                            {{-- Masih ada stage berikutnya --}}
-                            <a href="{{ request()->fullUrlWithQuery(['question' => 0, 'stage' => $stageIndex + 1]) }}"
-                                class="ml-auto bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded shadow">
-                                ✅ Finish Stage
-                            </a>
-                        @else
-                            {{-- Sudah di stage terakhir, arahkan ke leaderboard --}}
-                            <a href="{{ route('student.leaderboard.show', ['story' => $story->id]) }}"
-                                class="ml-auto bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded shadow">
-                                🏁 Selesai! Lihat Hasil
-                            </a>
-                        @endif
+                    {{-- Soal terakhir --}}
+                    @if ($answer && ($answer->is_correct || $answer->attempt >= 3))
+                        <a href="{{ route('student.leaderboard.show', ['story' => $story->id]) }}"
+                            class="ml-auto bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded shadow">
+                            🏁 Selesai! Lihat Hasil
+                        </a>
                     @else
                         <button disabled
                             class="ml-auto bg-gray-300 text-gray-500 font-semibold px-4 py-2 rounded shadow cursor-not-allowed">
-                            📌 Jawab dulu sebelum lanjut
+                            📌 Jawab dulu sampai benar
                         </button>
                     @endif
                 @endif
+
             </div>
 
 

@@ -48,10 +48,10 @@ class Student extends Model
             ->withTimestamps();
     }
 
-public function selectedAvatarModel()
-{
-    return $this->avatars()->wherePivot('is_selected', true);
-}
+    public function selectedAvatarModel()
+    {
+        return $this->avatars()->wherePivot('is_selected', true);
+    }
 
 
     public function attempts()

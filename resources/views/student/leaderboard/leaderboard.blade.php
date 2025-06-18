@@ -19,8 +19,8 @@
                 @if (isset($students[$i]))
                     <div class="flex flex-col items-center">
                         <div class="text-3xl">{{ $medals[$i] }}</div>
-                       <img src="{{ asset('storage/' . $students[$i]['avatar_path']) }}"
-                        class="w-16 h-16 rounded-full border-4 border-white shadow mb-2 object-cover">
+                        <img src="{{ asset('storage/' . $students[$i]['avatar_path']) }}"
+                            class="w-16 h-16 rounded-full border-4 border-white shadow mb-2 object-cover">
                         <div
                             class="{{ $podium[$i] }} {{ $heights[$i] }} w-20 rounded-t-xl flex items-end justify-center text-white font-bold text-lg shadow-lg">
                             {{ $students[$i]['score'] }}
@@ -33,11 +33,12 @@
         </div>
 
         {{-- Tabel untuk ranking lainnya --}}
-        <div class="bg-white rounded-xl shadow overflow-hidden">
+        <div class="bg-white rounded-xl shadow overflow-hidden overflow-x-auto">
+
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-indigo-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">#</th>
+                        <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
                         <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Avatar</th>
                         <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nama</th>
                         <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kelas</th>
@@ -48,15 +49,17 @@
                     @foreach ($students as $index => $student)
                         @if ($index > 2)
                             <tr>
-                                <td class="px-6 py-4 text-sm">
+                                <td class="px-6 py-4 text-sm text-gray-500 font-semibold">{{ $index + 1 }}</td>
+                                <td class="px-6 py-4">
                                     <img src="{{ asset('storage/' . $student['avatar_path']) }}"
+                                        class="w-12 h-12 rounded-full object-cover shadow-lg ring-2 ring-indigo-300 hover:scale-110 transition-transform duration-300">
 
-                                        class="w-12 h-12 rounded-full object-cover shadow inline-block">
                                 </td>
                                 <td class="px-6 py-4 text-sm">{{ $student['name'] }}</td>
                                 <td class="px-6 py-4 text-sm">{{ $student['class'] }}</td>
                                 <td class="px-6 py-4 text-sm text-right">{{ $student['score'] }}</td>
                             </tr>
+
 
                         @endif
                     @endforeach
@@ -65,10 +68,14 @@
         </div>
 
         <div class="mt-8 text-center">
-            <a href="{{ route('student.dashboard') }}"
-                class="inline-block bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold px-6 py-3 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300">
-                🔙 Kembali ke Dashboard
+
+            <a href="{{ route('student.leaderboard.global') }}"
+                class="inline-block mb-4 text-sm text-indigo-600 hover:underline">
+                🔙 Lihat ke Global Leaderboard
             </a>
+
         </div>
+
+
     </div>
 @endsection

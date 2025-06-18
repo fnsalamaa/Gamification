@@ -8,28 +8,44 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Story;
 use App\Models\StudentAnswer;
 use App\Models\Question;
+use App\Models\Student;
 class StudentController extends Controller
 {
 
-
     public function index()
     {
-        $user = Auth::user(); // ⬅️ ambil user yang login
-        $student = $user->student;
-        $student = Auth::user()->student;
-        if (!$student) {
-            return redirect()->route('student.dashboard')->with('error', 'Student not found.');
-        }
+        $user = Auth::user();
 
-        // Ambil avatar yang dipilih (is_selected = true)
+        $student = Student::withSum('answers as total_score', 'score_earned')
+            ->withSum([
+                'answers as weekly_score' => function ($query) {
+                    $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                }
+            ], 'score_earned')
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+
         $selectedAvatar = $student->avatars()->wherePivot('is_selected', true)->first();
-        $ownedBadges = $student->badges; // relasi yang sudah kamu punya
+        $ownedBadges = $student->badges;
         $stories = Story::take(4)->get();
-        // Ambil semua avatar yang sudah di-unlock oleh student dari pivot table
         $unlockedAvatars = $student->avatars()->wherePivot('is_unlocked', true)->get();
 
-        return view('student.dashboard', compact('student', 'selectedAvatar', 'ownedBadges', 'stories', 'unlockedAvatars', 'user'));
+        $globalStudents = Student::with('user', 'selectedAvatarModel')
+            ->withSum('answers as total_score', 'score_earned')
+            ->orderByDesc('total_score')
+            ->get();
+
+        return view('student.dashboard', compact(
+            'student',
+            'selectedAvatar',
+            'ownedBadges',
+            'stories',
+            'unlockedAvatars',
+            'user',
+            'globalStudents'
+        ));
     }
+
 
     public function updateProfile(Request $request)
     {
@@ -86,13 +102,16 @@ class StudentController extends Controller
             ->where('question_id', $question->id)
             ->count();
 
-        if ($attempt >= 3) {
-            // Redirect ke soal berikutnya
-            return redirect()->route('student.play', [
-                'stage' => request('stage'),
-                'question' => request('question') + 1
-            ])->with('error', '❌ Kamu sudah mencoba 3 kali. Lanjut ke soal berikutnya!');
-        }
+         // Cek apakah sudah mencoba 3 kali
+    if ($attempt >= 3) {
+        // Redirect langsung ke soal berikutnya
+        $story = $question->stage->story;
+        return redirect()->route('student.story.readStory', [
+            'story' => $story->id,
+            'stage' => request('stage'),
+            'question' => request('question') + 1
+        ])->with('error', '❌ Kamu sudah mencoba 3 kali. Lanjut ke soal berikutnya!');
+    }
 
 
         $selected = $request->selected_option;

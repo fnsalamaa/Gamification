@@ -33,7 +33,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users',
             'profile_photo' => 'nullable|image|max:2048',
             'password' => 'required|confirmed|min:6',
-            'role' => 'required|in:admin,teacher,user',
+            'role' => 'required|in:admin,teacher,student',
             'class' => 'nullable|string|max:255',
         ]);
 
@@ -52,7 +52,7 @@ class UserController extends Controller
 
         $user->assignRole($validated['role']);
 
-        if ($validated['role'] === 'user') {
+        if ($validated['role'] === 'student') {
             $user->student()->create([
                 'class' => $validated['class'] ?? 'Belum diatur',
             ]);
@@ -77,7 +77,7 @@ class UserController extends Controller
         'name' => 'required',
         'email' => 'required|email|unique:users,email,' . $user->id,
         'profile_photo' => 'nullable|image|max:2048',
-        'role' => 'required|in:admin,teacher,user',
+        'role' => 'required|in:admin,teacher,student',
         'class' => 'nullable|string|max:255',
     ]);
 
@@ -97,7 +97,7 @@ class UserController extends Controller
     $user->syncRoles([$validated['role']]);
 
     // Handle class khusus untuk student
-    if ($validated['role'] === 'user') {
+    if ($validated['role'] === 'student') {
         if ($user->student) {
             $user->student->update(['class' => $validated['class']]);
         } else {
