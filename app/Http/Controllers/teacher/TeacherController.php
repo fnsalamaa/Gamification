@@ -8,14 +8,27 @@ use App\Models\Student;
 use App\Models\Story;
 use App\Models\Question;
 use App\Models\StudentAnswer;
-
+use Illuminate\Pagination\Paginator;
 
 class TeacherController extends Controller
 {
     public function index()
     {
-        return view('teacher.dashboard');
+        $totalStudents = Student::count();
+        $totalStories = Story::count();
+        $totalQuestions = Question::count();
+        
+        $latestStories = Story::latest()->take(5)->get();
+
+        return view('teacher.dashboard', compact(
+            'totalStudents',
+            'totalStories',
+            'totalQuestions',
+            
+            'latestStories'
+        ));
     }
+
 
     public function showAllStudents()
     {
@@ -47,9 +60,9 @@ class TeacherController extends Controller
 
         if ($type === 'global') {
             $students = Student::with('user')
-                ->withSum('studentAnswers', 'score_earned')
-                ->orderByDesc('student_answers_sum_score_earned')
-                ->get();
+                ->orderByDesc('total_score')
+                ->paginate(10);
+
 
             return view('teacher.leaderboard.index', compact('type', 'students'));
         } else {
@@ -69,7 +82,7 @@ class TeacherController extends Controller
                     ->groupBy('student_id')
                     ->with('student.user')
                     ->orderByDesc('total_score')
-                    ->get();
+                    ->paginate(10);
 
                 $storyScores[] = [
                     'story' => $story,

@@ -1,23 +1,23 @@
 @extends('admin.layouts.app')
 
 @section('content')
- @if(session('success'))
-            <div class="mb-4 p-3 bg-green-100 text-green-700 rounded">
-                {{ session('success') }}
-            </div>
-        @endif
+    @if(session('success'))
+        <div class="mb-4 p-3 bg-green-100 text-green-700 rounded">
+            {{ session('success') }}
+        </div>
+    @endif
     <div x-data="{
-                                        open: false,
-                                        openEdit: false,
-                                        role: '',
-                                        editUser: {
-                                            id: null,
-                                            name: '',
-                                            email: '',
-                                            role: '',
-                                            class: ''
-                                        }
-                                    }" class="max-w-7xl mx-auto px-4 py-8">
+                                                            open: false,
+                                                            openEdit: false,
+                                                            role: '',
+                                                            editUser: {
+                                                                id: null,
+                                                                name: '',
+                                                                email: '',
+                                                                role: '',
+                                                                class: ''
+                                                            }
+                                                        }" class="max-w-7xl mx-auto px-4 py-8">
 
         <!-- Judul Halaman -->
         <div class="mb-6">
@@ -79,23 +79,22 @@
 
                             <td class="px-6 py-4 flex items-center gap-2 justify-center">
                                 <button @click="openEdit = true;
-                                                                            editUser.id = {{ $user->id }};
-                                                                            editUser.name = '{{ $user->name }}';
-                                                                            editUser.email = '{{ $user->email }}';
-                                                                            editUser.role = '{{ optional($user->roles->first())->name }}';
-                                                                            editUser.class = '{{ optional($user->student)->class ?? '' }}';
-                                                                        "
-                                    class="bg-yellow-400 hover:bg-yellow-500 text-white text-xs font-semibold px-3 py-1.5 rounded-md shadow">
-                                    Edit
+                                                                                                                    editUser.id = {{ $user->id }};
+                                                                                                                    editUser.name = '{{ $user->name }}';
+                                                                                                                    editUser.email = '{{ $user->email }}';
+                                                                                                                    editUser.role = '{{ optional($user->roles->first())->name }}';
+                                                                                                                    editUser.class = '{{ optional($user->student)->class ?? '' }}';
+                                                                                                                "
+                                    class="bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-medium px-4 py-2 rounded-lg shadow transition duration-150 ease-in-out">
+                                    ✏️ Edit
                                 </button>
 
 
                                 <div x-data="{ showDelete: false }">
                                     <!-- Tombol Delete -->
                                     <button @click="showDelete = true"
-                                        class="flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white text-sm px-3 py-1.5 rounded-lg shadow transition">
-                                        
-                                        Delete
+                                        class="bg-red-600 hover:bg-red-700 text-white text-xs font-medium px-4 py-2 rounded-lg shadow transition duration-150 ease-in-out">
+                                        🗑️ Delete
                                     </button>
 
                                     <!-- Modal Konfirmasi Tengah -->
@@ -136,10 +135,6 @@
         <div class="mt-4">
             {{ $users->appends(request()->input())->links() }}
         </div>
-
-
-
-
 
         <!-- Modal Add -->
         <div x-show="open" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center" x-cloak>
@@ -189,14 +184,20 @@
                             <input type="text" name="class" class="w-full border-gray-300 rounded-lg p-2" />
                         </div>
 
-                        <div class="flex justify-end mt-4">
-                            <button type="button" @click="open = false" class="px-4 py-2 bg-gray-300 rounded-lg mr-2">
-                                Cancel
-                            </button>
-                            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        <div class="flex justify-end mt-6 space-x-3">
+
+
+                            <button type="submit"
+                                class="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
                                 Save
                             </button>
+
+                            <button type="button" @click="open = false"
+                                class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400 transition">
+                                Cancel
+                            </button>
                         </div>
+
                     </div>
                 </form>
             </div>
@@ -242,21 +243,30 @@
                                 class="w-full border-gray-300 rounded-lg p-2" />
                         </div>
 
-                        <div class="flex justify-end mt-4">
-                            <button type="button" @click="openEdit = false" class="px-4 py-2 bg-gray-300 rounded-lg mr-2">
-                                Cancel
-                            </button>
-                            <button type="submit" class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
+                        <div class="flex justify-end gap-2 mt-6">
+
+
+                            <!-- Tombol Update -->
+                            <button type="submit"
+                                class="bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium px-5 py-2 rounded-lg shadow transition duration-150 ease-in-out">
                                 Update
                             </button>
+
+                            <!-- Tombol Cancel -->
+                            <button type="button" @click="openEdit = false"
+                                class="bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-medium px-5 py-2 rounded-lg shadow transition duration-150 ease-in-out">
+                                Cancel
+                            </button>
                         </div>
+
+
                     </div>
                 </form>
             </div>
         </div>
 
 
-       
+
 
     </div>
 @endsection

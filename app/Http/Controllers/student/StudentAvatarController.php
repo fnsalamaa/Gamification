@@ -84,8 +84,8 @@ class StudentAvatarController extends Controller
             'is_selected' => true,
         ]);
 
-        return redirect()->route('student.avatar.choose')->with('success', 'Avatar berhasil dipilih!');
-    }
+        return redirect()->route('student.avatar.choose')->with('success', 'Avatar successfully selected!');
+}
 
     protected function checkStoryRankCondition($student, $condition)
     {

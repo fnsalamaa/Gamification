@@ -8,7 +8,7 @@
         </div>
     @elseif (session('error'))
         <div class="mt-4 p-4 rounded-lg bg-red-100 border border-red-300 text-red-800 font-semibold">
-             {{ session('error') }}
+            {{ session('error') }}
         </div>
     @endif
 
@@ -64,7 +64,7 @@
 
                 <div class="group text-center">
                     <a href="{{ $isUnlocked ? request()->fullUrlWithQuery(['stage' => $index, 'question' => 0]) : '#' }}" class="block w-20 h-20 rounded-xl transition shadow-md p-2 transform hover:scale-105
-                                                                                                                                                                                                        {{ $isActive
+                                                                                                                                                                                                                {{ $isActive
                 ? 'bg-indigo-600 text-white border-2 border-indigo-700'
                 : ($isUnlocked
                     ? 'bg-white text-indigo-700 border border-indigo-300 hover:bg-indigo-100'
@@ -169,7 +169,7 @@
                     <button type="submit"
                         class="bg-indigo-600 text-white font-bold px-6 py-2 rounded hover:bg-indigo-700 shadow {{ $disabled ? 'opacity-50 cursor-not-allowed' : '' }}"
                         {{ $disabled ? 'disabled' : '' }}>
-                        Submit Jawaban
+                        Submit Answer
                     </button>
 
 
@@ -177,12 +177,22 @@
 
             </form>
 
-
-
-
-
-
             {{-- Navigation Buttons --}}
+            @php
+                // 🆕 DITAMBAHKAN
+                $isLastQuestionInStage = $questionIndex + 1 >= $totalQuestions;
+                $isLastStage = $stageIndex + 1 >= count($stages);
+
+                // 🆕 DITAMBAHKAN - Cek apakah semua soal di stage sudah benar atau 3x
+                $allAnsweredOrMaxAttempt = $currentStage->questions->every(function ($q) use ($student) {
+                    $jawaban = \App\Models\StudentAnswer::where('student_id', $student->id)
+                        ->where('question_id', $q->id)
+                        ->orderByDesc('created_at')
+                        ->first();
+
+                    return $jawaban && ($jawaban->is_correct || $jawaban->attempt >= 3);
+                });
+            @endphp
 
             <div class="flex justify-between mt-6">
                 {{-- Tombol Sebelumnya --}}
@@ -195,9 +205,9 @@
                     <div></div>
                 @endif
 
-                {{-- Tombol Berikutnya atau Selesai --}}
-                @if ($questionIndex + 1 < $totalQuestions)
-                    {{-- Tombol Next --}}
+                {{-- Tombol Berikutnya, Next Stage, atau Selesai --}}
+                @if (!$isLastQuestionInStage)
+                    {{-- ✅ DIRUBAH: Next Question --}}
                     @if ($answer && ($answer->is_correct || $answer->attempt >= 3))
                         <a href="{{ request()->fullUrlWithQuery(['question' => $questionIndex + 1]) }}"
                             class="ml-auto bg-indigo-500 hover:bg-indigo-600 text-white font-semibold px-4 py-2 rounded shadow">
@@ -206,25 +216,41 @@
                     @else
                         <button disabled
                             class="ml-auto bg-gray-300 text-gray-500 font-semibold px-4 py-2 rounded shadow cursor-not-allowed">
-                            📌 Jawab dulu sampai benar
+                            📌 Please Answer First!
                         </button>
                     @endif
                 @else
-                    {{-- Soal terakhir --}}
+                    {{-- ✅ DIRUBAH: Soal terakhir di stage --}}
                     @if ($answer && ($answer->is_correct || $answer->attempt >= 3))
-                        <a href="{{ route('student.leaderboard.show', ['story' => $story->id]) }}"
-                            class="ml-auto bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded shadow">
-                            🏁 Selesai! Lihat Hasil
-                        </a>
+                        @if (!$isLastStage)
+                            {{-- 🆕 DITAMBAHKAN: Validasi semua soal stage sudah dijawab --}}
+                            @if ($allAnsweredOrMaxAttempt)
+                                <a href="{{ route('student.story.readStory', ['story' => $story->id, 'stage' => $stageIndex + 1, 'question' => 0]) }}"
+                                    class="ml-auto bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded shadow">
+                                    🚀 Next Stage
+                                </a>
+                            @else
+                                <button disabled
+                                    class="ml-auto bg-gray-300 text-gray-500 font-semibold px-4 py-2 rounded shadow cursor-not-allowed">
+                                    📌 Please Answer First!
+                                </button>
+                            @endif
+                        @else
+                            {{-- ✅ DIRUBAH: Soal terakhir di stage terakhir --}}
+                            <a href="{{ route('student.leaderboard.show', ['story' => $story->id]) }}"
+                                class="ml-auto bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded shadow">
+                                🏁 Well Done! Final Result
+                            </a>
+                        @endif
                     @else
                         <button disabled
                             class="ml-auto bg-gray-300 text-gray-500 font-semibold px-4 py-2 rounded shadow cursor-not-allowed">
-                            📌 Jawab dulu sampai benar
+                            📌 Please Answer First!
                         </button>
                     @endif
                 @endif
-
             </div>
+
 
 
         @else
@@ -249,7 +275,6 @@
                             class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-2 rounded shadow inline-block">
                             🏆 Lihat Leaderboard
                         </a>
-
                     </div>
                 </div>
             </div>

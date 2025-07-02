@@ -30,7 +30,7 @@ public function store(Request $request)
         'cover' => $path,
     ]);
 
-    return redirect()->back()->with('success', 'Story berhasil ditambahkan.');
+    return redirect()->back()->with('success', 'Story successfully added!');
     
     
 }
@@ -74,7 +74,7 @@ public function storeDetail(Request $request, $id)
         // tambah field lain jika ada
     ]);
 
-    return redirect()->route('admin.story.create-story')->with('success', 'Detail berhasil ditambahkan.');
+    return redirect()->route('admin.story.create-story')->with('success', 'Details added successfully!');
 }
 
 public function destroy($id)
@@ -89,7 +89,35 @@ public function destroy($id)
     // Hapus data story dari database
     $story->delete();
 
-    return redirect()->back()->with('success', 'Story berhasil dihapus.');
+    return redirect()->back()->with('success', 'Story successfully deleted!');
+}
+
+public function update(Request $request, $id)
+{
+    $story = Story::findOrFail($id);
+
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'cover' => 'nullable|image|max:2048', // cover bisa kosong
+    ]);
+
+    $story->title = $request->title;
+
+    // Jika cover baru diupload
+    if ($request->hasFile('cover')) {
+        // Hapus cover lama
+        if ($story->cover && \Storage::disk('public')->exists($story->cover)) {
+            \Storage::disk('public')->delete($story->cover);
+        }
+
+        // Simpan cover baru
+        $path = $request->file('cover')->store('story-covers', 'public');
+        $story->cover = $path;
+    }
+
+    $story->save();
+
+    return redirect()->back()->with('success', 'Story successfully updated!');
 }
 
 

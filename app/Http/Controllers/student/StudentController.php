@@ -19,14 +19,8 @@ class StudentController extends Controller
     {
         $user = Auth::user();
 
-        $student = Student::withSum('answers as total_score', 'score_earned')
-            ->withSum([
-                'answers as weekly_score' => function ($query) {
-                    $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
-                }
-            ], 'score_earned')
-            ->where('user_id', $user->id)
-            ->firstOrFail();
+        // Ambil student langsung dari kolom total_score
+        $student = Student::where('user_id', $user->id)->firstOrFail();
 
         // 🔓 Cek dan unlock badge di sini
         $this->checkAndUnlockBadges($student);
@@ -36,8 +30,8 @@ class StudentController extends Controller
         $stories = Story::take(4)->get();
         $unlockedAvatars = $student->avatars()->wherePivot('is_unlocked', true)->get();
 
+        // Ambil global leaderboard dari kolom total_score (bukan hitung ulang)
         $globalStudents = Student::with('user', 'selectedAvatarModel')
-            ->withSum('answers as total_score', 'score_earned')
             ->orderByDesc('total_score')
             ->get();
 
@@ -141,6 +135,11 @@ class StudentController extends Controller
             'is_correct' => $isCorrect,
             'score_earned' => $score,
         ]);
+
+        // 🔄 Update kolom total_score dari semua jawaban
+        $totalScore = StudentAnswer::where('student_id', $studentId)->sum('score_earned');
+        Student::where('id', $studentId)->update(['total_score' => $totalScore]);
+
         $msg = '';
 
         if ($isCorrect) {

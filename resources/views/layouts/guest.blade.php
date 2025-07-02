@@ -18,8 +18,8 @@
 
 <body class="font-sans text-gray-900 antialiased bg-cover bg-center bg-no-repeat"
     style="background-image: url('{{ asset('storage/welcome/background.png') }}');">
-    
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-black/40 backdrop-blur-sm">
+
+    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-transparent">
         <div>
             <a href="/">
                 <img src="{{ asset('storage/welcome/logo.jpeg') }}" alt="Logo"
@@ -32,5 +32,4 @@
         </div>
     </div>
 </body>
-
 </html>

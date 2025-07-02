@@ -11,12 +11,10 @@
 
         <!-- Judul & Filter -->
         <div class="relative z-10 flex justify-between items-center mb-6">
-
             <div class="flex items-center gap-4">
                 <label class="text-sm font-semibold text-indigo-800 flex items-center">
                     <span class="mr-2">📖 Choose Story:</span>
                 </label>
-
                 <div class="relative">
                     <select
                         onchange="if(this.value) window.location.href = '{{ url('student/leaderboard') }}/' + this.value"
@@ -26,8 +24,6 @@
                             <option value="{{ $s->id }}">{{ $s->title }}</option>
                         @endforeach
                     </select>
-
-                    <!-- Down Arrow Icon -->
                     <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-indigo-600">
                         ▼
                     </div>
@@ -35,14 +31,13 @@
             </div>
         </div>
 
-
         {{-- Podium Section --}}
         @php
             $topThree = $students->take(3);
             $colors = ['bg-yellow-400', 'bg-gray-400', 'bg-amber-500'];
             $heights = ['h-40', 'h-32', 'h-28'];
             $emojis = ['🥇', '🥈', '🥉'];
-            $visualOrder = [1, 0, 2]; // kiri = juara 2, tengah = juara 1, kanan = juara 3
+            $visualOrder = [1, 0, 2];
         @endphp
 
         <div class="relative z-10 flex justify-center items-end gap-6 mb-10">
@@ -52,38 +47,31 @@
                 @endphp
 
                 @if ($student)
-                            <div class="flex flex-col items-center">
-                                @php
-                                    $avatarPath = $student['avatar_path'];
-                                    $userPhoto = $student['user']['profile_photo_path'] ?? null;
+                    @php
+                        $avatarPath = $student['avatar_path'] ?? '';
 
-                                    if (!$avatarPath || $avatarPath === 'default.png') {
-                                        if ($userPhoto) {
-                                            $avatarUrl = asset('storage/' . $userPhoto);
-                                        } else {
-                                            $avatarUrl = 'https://ui-avatars.com/api/?name=' . urlencode($student['name']);
-                                        }
-                                    } else {
-                                        $avatarUrl = asset('storage/' . $avatarPath);
-                                    }
-                                @endphp
+                        // Kalau avatar kosong, default.png, atau special.jpg, pakai special.jpg
+                        if (!$avatarPath || in_array($avatarPath, ['default.png', 'special.jpg'])) {
+                            $avatarUrl = asset('storage/avatars/special.jpg');
+                        } else {
+                            $avatarUrl = asset('storage/' . $avatarPath);
+                        }
+                    @endphp
 
-                    <img src="{{ $avatarUrl }}" class="w-10 h-10 rounded-full border-2 border-indigo-300 object-cover">
-
-                                <div class="mt-2 text-sm font-semibold text-gray-800 text-center">
-                                    {{ $student['name'] }}
-                                </div>
-                                <div class="text-xs text-gray-500 mb-2">Score: {{ $student['score'] }}</div>
-                                <div
-                                    class="w-20 {{ $heights[$rankIndex] ?? 'h-28' }} {{ $colors[$rankIndex] ?? 'bg-indigo-400' }} rounded-t-md shadow-md flex items-end justify-center text-white font-bold text-xl">
-                                    {{ $emojis[$rankIndex] ?? '' }}
-                                </div>
-                            </div>
+                    <div class="flex flex-col items-center">
+                        <img src="{{ $avatarUrl }}" class="w-10 h-10 rounded-full border-2 border-indigo-300 object-cover">
+                        <div class="mt-2 text-sm font-semibold text-gray-800 text-center">
+                            {{ $student['name'] }}
+                        </div>
+                        <div class="text-xs text-gray-500 mb-2">Score: {{ $student['score'] }}</div>
+                        <div
+                            class="w-20 {{ $heights[$rankIndex] ?? 'h-28' }} {{ $colors[$rankIndex] ?? 'bg-indigo-400' }} rounded-t-md shadow-md flex items-end justify-center text-white font-bold text-xl">
+                            {{ $emojis[$rankIndex] ?? '' }}
+                        </div>
+                    </div>
                 @endif
             @endforeach
         </div>
-
-
 
         {{-- Tabel Leaderboard Lainnya --}}
         <div class="bg-white rounded-xl shadow-lg overflow-hidden relative z-10">
@@ -99,16 +87,24 @@
                     <tbody>
                         @foreach ($students as $i => $student)
                             @if ($i >= 3)
+                                @php
+                                    $avatarPath = $student['avatar_path'] ?? '';
+
+                                    if (!$avatarPath || in_array($avatarPath, ['default.png', 'special.jpg'])) {
+                                        $avatarUrl = asset('storage/avatars/special.jpg');
+                                    } else {
+                                        $avatarUrl = asset('storage/' . $avatarPath);
+                                    }
+                                @endphp
+
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-4 py-3">{{ $i + 1 }}</td>
                                     <td class="px-4 py-3 flex items-center space-x-3">
-                                        <img src="{{ asset('storage/' . $student['avatar_path']) }}"
-                                            class="w-10 h-10 rounded-full border-2 border-indigo-300">
+                                        <img src="{{ $avatarUrl }}" class="w-10 h-10 rounded-full border-2 border-indigo-300 object-cover">
                                         <div>
                                             <div class="font-medium text-gray-800">
                                                 {{ $student['name'] }}
                                             </div>
-                                            
                                         </div>
                                     </td>
                                     <td class="px-4 py-3 text-right font-semibold text-indigo-700">

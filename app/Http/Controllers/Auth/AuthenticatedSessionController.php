@@ -49,7 +49,8 @@ class AuthenticatedSessionController extends Controller
 
 
         // Fallback jika tidak punya role
-        return redirect()->route('dashboard');
+        return redirect()->route('login');
+
     }
 
 

@@ -19,7 +19,8 @@ use Spatie\Permission\Models\Role;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->middleware('guest');
+
 
 //Admin
 Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(function () {
@@ -28,7 +29,7 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     // Story
     Route::get('/create-story', [StoryController::class, 'index'])->name('admin.create-story');
     Route::post('/store-story', [StoryController::class, 'store'])->name('admin.store-story');
-    Route::get('/story/{id}/edit', [StoryController::class, 'edit'])->name('admin.edit-story');
+    Route::put('/story/{id}', [StoryController::class, 'update'])->name('admin.update-story');
     Route::delete('/story/{id}', [StoryController::class, 'destroy'])->name('admin.delete-story');
     Route::get('/story/{id}/detail', [StoryController::class, 'addDetail'])->name('admin.detail-story');
     Route::post('/story/{id}/detail', [StoryController::class, 'storeDetail'])->name('admin.store-detail');
@@ -45,7 +46,6 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->group(fu
     Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
     Route::put('/users/{id}', [UserController::class, 'update'])->name('admin.users.update');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy');
-
 
 
 });
@@ -100,3 +100,17 @@ Route::prefix('teacher')->middleware(['auth', 'verified', 'role:teacher'])->grou
 });
 
 require __DIR__ . '/auth.php';
+
+Route::middleware('auth')->get('/redirect-after-login', function () {
+    $user = auth()->user();
+
+    if ($user->hasRole('admin')) {
+        return redirect()->route('admin.dashboard');
+    } elseif ($user->hasRole('student')) {
+        return redirect()->route('student.dashboard');
+    } elseif ($user->hasRole('teacher')) {
+        return redirect()->route('teacher.dashboard');
+    }
+
+    return redirect('/');
+})->name('redirect.after.login');

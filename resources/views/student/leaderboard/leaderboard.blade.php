@@ -1,11 +1,21 @@
 @extends('student.layouts.app')
 
 @section('content')
-    <div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto px-4 py-8 relative">
+
         <div class="text-center mb-10">
             <h1 class="text-4xl font-extrabold text-yellow-500 drop-shadow">🏆 Leaderboard</h1>
             <p class="text-gray-600 mt-2">Story: <strong>{{ $story->title }}</strong></p>
         </div>
+
+        <a href="{{ route('student.leaderboard.global') }}"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg shadow-md hover:bg-indigo-700 hover:shadow-lg transition duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Global Leaderboard
+        </a>
 
         {{-- Podium Top 3 --}}
         <div class="flex justify-center items-end gap-6 mb-12">
@@ -15,11 +25,21 @@
                 $medals = [1 => '🥈', 0 => '🥇', 2 => '🥉'];
             @endphp
 
-            @foreach ([1, 0, 2] as $i) {{-- Urut podium: 2 - 1 - 3 --}}
+            @foreach ([1, 0, 2] as $i)
                 @if (isset($students[$i]))
+                    @php
+                        $avatarPath = $students[$i]['avatar_path'] ?? '';
+                        // Kalau avatar kosong atau default, pakai special.jpg
+                        if (!$avatarPath || in_array($avatarPath, ['default.png', 'special.jpg'])) {
+                            $avatarUrl = asset('storage/avatars/special.jpg');
+                        } else {
+                            $avatarUrl = asset('storage/' . $avatarPath);
+                        }
+                    @endphp
+
                     <div class="flex flex-col items-center">
                         <div class="text-3xl">{{ $medals[$i] }}</div>
-                        <img src="{{ asset('storage/' . $students[$i]['avatar_path']) }}"
+                        <img src="{{ $avatarUrl }}"
                             class="w-16 h-16 rounded-full border-4 border-white shadow mb-2 object-cover">
                         <div
                             class="{{ $podium[$i] }} {{ $heights[$i] }} w-20 rounded-t-xl flex items-end justify-center text-white font-bold text-lg shadow-lg">
@@ -34,7 +54,6 @@
 
         {{-- Tabel untuk ranking lainnya --}}
         <div class="bg-white rounded-xl shadow overflow-hidden overflow-x-auto">
-
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-indigo-50">
                     <tr>
@@ -48,34 +67,27 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach ($students as $index => $student)
                         @if ($index > 2)
+                            @php
+                                $avatarPath = $student['avatar_path'] ?? '';
+                                if (!$avatarPath || in_array($avatarPath, ['default.png', 'special.jpg'])) {
+                                    $avatarUrl = asset('storage/avatars/special.jpg');
+                                } else {
+                                    $avatarUrl = asset('storage/' . $avatarPath);
+                                }
+                            @endphp
                             <tr>
                                 <td class="px-6 py-4 text-sm text-gray-500 font-semibold">{{ $index + 1 }}</td>
                                 <td class="px-6 py-4">
-                                    <img src="{{ asset('storage/' . $student['avatar_path']) }}"
-                                        class="w-12 h-12 rounded-full object-cover shadow-lg ring-2 ring-indigo-300 hover:scale-110 transition-transform duration-300">
-
+                                    <img src="{{ $avatarUrl }}" class="w-10 h-10 rounded-full border-2 border-indigo-300 object-cover">
                                 </td>
                                 <td class="px-6 py-4 text-sm">{{ $student['name'] }}</td>
                                 <td class="px-6 py-4 text-sm">{{ $student['class'] }}</td>
                                 <td class="px-6 py-4 text-sm text-right">{{ $student['score'] }}</td>
                             </tr>
-
-
                         @endif
                     @endforeach
                 </tbody>
             </table>
         </div>
-
-        <div class="mt-8 text-center">
-
-            <a href="{{ route('student.leaderboard.global') }}"
-                class="inline-block mb-4 text-sm text-indigo-600 hover:underline">
-                🔙 Lihat ke Global Leaderboard
-            </a>
-
-        </div>
-
-
     </div>
 @endsection

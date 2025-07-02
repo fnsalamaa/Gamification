@@ -67,20 +67,23 @@ public function global()
 
             $selectedAvatar = $student->avatars->firstWhere('pivot.is_selected', true);
 
+            // Pastikan path lengkap untuk default avatar
+            $avatarPath = $selectedAvatar?->image_path ?? 'avatars/special.jpg';
+
             return [
                 'id' => $student->id,
                 'name' => $student->user->name ?? 'Anonymous',
                 'class' => $student->class,
                 'score' => $score,
-                'avatar_path' => $selectedAvatar?->image_path ?? 'default.png',
-                 'user' => [
-        'profile_photo_path' => $student->user->profile_photo_path ?? null,
-    ]
+                'avatar_path' => $avatarPath,
+                'user' => [
+                    'profile_photo_path' => $student->user->profile_photo_path ?? null,
+                ]
             ];
         })
         ->filter(fn ($s) => $s['score'] > 0)
         ->sortByDesc('score')
-        ->values(); // penting! supaya indexnya berurutan mulai 0
+        ->values();
 
     $allStories = Story::all();
 

@@ -11,7 +11,7 @@ class Student extends Model
 
     protected $fillable = [
         'user_id',
-        'name',           // ✅ tambahkan ini
+        'name',           
         'class',
         'total_score',
         'weekly_score',
