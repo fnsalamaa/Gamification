@@ -32,7 +32,7 @@ class TeacherController extends Controller
 
     public function showAllStudents()
     {
-        $students = Student::with('user')->get();
+        $students = Student::with('user')->paginate(10);
         return view('teacher.student.show-student', compact('students'));
     }
 
@@ -61,7 +61,8 @@ class TeacherController extends Controller
         if ($type === 'global') {
             $students = Student::with('user')
                 ->orderByDesc('total_score')
-                ->paginate(10);
+                ->paginate(10)
+                ->appends(['type' => 'global']);
 
 
             return view('teacher.leaderboard.index', compact('type', 'students'));
@@ -82,7 +83,11 @@ class TeacherController extends Controller
                     ->groupBy('student_id')
                     ->with('student.user')
                     ->orderByDesc('total_score')
-                    ->paginate(10);
+                    ->paginate(10)
+                    ->appends([
+                        'type' => 'story',
+                        'story_id' => $story->id
+                    ]);
 
                 $storyScores[] = [
                     'story' => $story,
@@ -93,9 +98,5 @@ class TeacherController extends Controller
             return view('teacher.leaderboard.index', compact('type', 'stories', 'storyScores', 'selectedStoryId'));
         }
     }
-
-
-
-
 
 }

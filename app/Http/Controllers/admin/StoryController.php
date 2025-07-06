@@ -98,7 +98,7 @@ public function update(Request $request, $id)
 
     $request->validate([
         'title' => 'required|string|max:255',
-        'cover' => 'nullable|image|max:2048', // cover bisa kosong
+        'cover' => 'nullable|image|max:2048', 
     ]);
 
     $story->title = $request->title;

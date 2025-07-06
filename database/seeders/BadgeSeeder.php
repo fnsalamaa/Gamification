@@ -94,12 +94,20 @@ class BadgeSeeder extends Seeder
                 'description' => 'Rank 3 in the final leaderboard. You’ve got the skill, but is it enough?',
                 'unlock_condition' => 'rank_3_final',
             ],
+            [
+                'name' => '🐉 Dragon Legacy',
+                'icon' => 'badges/dragon legacy.jpeg',
+                'description' => 'Earn 100 points and prove you are bold enough to ride the wrath of dragons and rise from a lake born of rage.',
+                'unlock_condition' => 'score_100_dragon_legacy',
+            ],
+
+
         ];
 
         foreach ($badges as $badge) {
             Badge::updateOrCreate(
-                ['name' => $badge['name']], 
-                $badge                      
+                ['name' => $badge['name']],
+                $badge
             );
         }
 

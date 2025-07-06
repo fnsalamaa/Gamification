@@ -11,7 +11,6 @@ class LeaderboardController extends Controller
 {
     public function show(Story $story)
 {
-    // Ambil semua student beserta user dan avatars
     $students = Student::with(['user', 'avatars'])->get()
         ->map(function ($student) use ($story) {
             // Hitung total skor dari story ini
@@ -81,7 +80,6 @@ public function global()
                 ]
             ];
         })
-        ->filter(fn ($s) => $s['score'] > 0)
         ->sortByDesc('score')
         ->values();
 

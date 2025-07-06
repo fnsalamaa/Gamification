@@ -13,15 +13,15 @@
     </div>
 @endif
 
-<div class="max-w-5xl mx-auto p-6">
-    <h1 class="text-3xl font-extrabold mb-6 text-center text-purple-700">🧙 Choose Your Avatar</h1>
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h1 class="text-3xl font-extrabold mb-8 text-center text-purple-700">🧙 Choose Your Avatar</h1>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+    <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         @foreach ($avatars as $avatar)
             <form action="{{ route('student.avatar.select', $avatar->id) }}" method="POST" class="group">
                 @csrf
                 <div class="relative border-4 p-4 rounded-2xl bg-gradient-to-br from-purple-100 to-indigo-100 shadow-lg 
-                    transition-transform transform group-hover:scale-105 h-[340px] flex flex-col justify-between
+                    transition-transform transform group-hover:scale-105 min-h-[360px] flex flex-col justify-between
                     @if($avatar->is_selected) border-green-500 @else border-transparent @endif">
 
                     {{-- Selected check icon --}}
@@ -49,14 +49,14 @@
                     {{-- Avatar image --}}
                     <div class="flex justify-center">
                         <img src="{{ asset('storage/' . $avatar->image_path) }}"
-                             class="w-24 h-24 rounded-full border-4 border-purple-300 shadow-md 
+                             class="w-24 h-24 rounded-full border-4 border-purple-300 shadow-md object-cover
                              {{ !$avatar->is_unlocked ? 'grayscale opacity-60' : '' }}">
                     </div>
 
                     {{-- Avatar name and description --}}
-                    <div class="mt-4 text-center">
-                        <h2 class="text-lg font-bold text-gray-800">{{ $avatar->name }}</h2>
-                        <p class="text-sm text-gray-600 mt-1">{{ $avatar->description }}</p>
+                    <div class="mt-4 text-center px-1">
+                        <h2 class="text-base sm:text-lg font-bold text-gray-800">{{ $avatar->name }}</h2>
+                        <p class="text-sm text-gray-600 mt-1 leading-snug">{{ $avatar->description }}</p>
                     </div>
 
                     {{-- Select button --}}

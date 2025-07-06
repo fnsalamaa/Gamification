@@ -23,7 +23,11 @@ class StudentController extends Controller
         $student = Student::where('user_id', $user->id)->firstOrFail();
 
         // 🔓 Cek dan unlock badge di sini
-        $this->checkAndUnlockBadges($student);
+        $newBadges = $this->checkAndUnlockBadges($student);
+        if (!empty($newBadges)) {
+            session()->flash('new_badges', $newBadges);
+        }
+
 
         $selectedAvatar = $student->avatars()->wherePivot('is_selected', true)->first();
         $ownedBadges = $student->badges;
@@ -139,6 +143,9 @@ class StudentController extends Controller
         // 🔄 Update kolom total_score dari semua jawaban
         $totalScore = StudentAnswer::where('student_id', $studentId)->sum('score_earned');
         Student::where('id', $studentId)->update(['total_score' => $totalScore]);
+
+        // ✅ Cek dan unlock badge setelah skor diupdate
+        $this->checkAndUnlockBadges($student);
 
         $msg = '';
 

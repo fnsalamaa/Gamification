@@ -77,12 +77,19 @@ class AvatarSeeder extends Seeder
                 'description' => 'Unlocked by becoming no. 1 in the Timun Mas story means conquering giants and proving you are the ultimate hero!',
                 'unlock_condition' => 'story_timun_mas_1',
             ],
+            [
+                'name' => 'Sarangan Soulkeeper',
+                'image_path' => 'avatars/sarangan soulkeeper.jpeg',
+                'description' => 'Unlocked by becoming no. 1 in the Telaga Sarangan story. Only legends earn the right to walk with dragons and command the lake’s hidden power.',
+                'unlock_condition' => 'story_telaga_sarangan_1',
+            ],
+
 
         ];
 
         foreach ($avatars as $avatar) {
             Avatar::updateOrCreate(
-                [ 'name' => $avatar['name']],
+                ['name' => $avatar['name']],
                 $avatar
             );
         }

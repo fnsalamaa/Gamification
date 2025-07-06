@@ -44,7 +44,7 @@ class QuestionController extends Controller
         $question->save();
     }
 
-    return redirect()->back()->with('success', 'Semua soal berhasil disimpan.');
+    return redirect()->back()->with('success', 'All questions were successfully saved');
 }
 
 public function edit($id)
@@ -83,7 +83,7 @@ public function update(Request $request, $id)
 
     $question->save();
 
-    return redirect()->back()->with('success', 'Soal berhasil diperbarui.');
+    return redirect()->back()->with('success', 'Question successfully updated');
 }
 
 public function destroy($id)
@@ -97,7 +97,7 @@ public function destroy($id)
 
     $question->delete();
 
-    return redirect()->back()->with('success', 'Soal berhasil dihapus.');
+    return redirect()->back()->with('success', 'Question successfully deleted');
 }
 
 

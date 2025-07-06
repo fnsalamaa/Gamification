@@ -47,9 +47,10 @@
         </div>
 
 
-        <div class="overflow-x-auto bg-white shadow rounded-lg">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-100">
+        <div class="w-full overflow-x-auto bg-white shadow rounded-lg">
+            <table class="min-w-[768px] w-full divide-y divide-gray-200 text-sm text-gray-700">
+
+                <thead class="bg-gray-100 sticky top-0 z-10">
                     <tr class="text-center">
                         <th class="px-6 py-3 text-xs font-medium text-gray-600 uppercase">Profile</th>
                         <th class="px-6 py-3 text-xs font-medium text-gray-600 uppercase">Name</th>
@@ -63,7 +64,7 @@
                         <tr class="text-center">
                             <td class="px-6 py-4">
                                 <img src="{{ $user->profile_photo_path ? asset('storage/' . $user->profile_photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) }}"
-                                    alt="Profile" class="w-10 h-10 rounded-full object-cover">
+                                    alt="Profile" class="w-10 h-10 rounded-full object-cover mx-auto">
 
                             </td>
                             <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $user->name }}</td>
@@ -264,9 +265,5 @@
                 </form>
             </div>
         </div>
-
-
-
-
     </div>
 @endsection

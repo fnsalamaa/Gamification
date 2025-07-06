@@ -10,8 +10,10 @@ trait ChecksBadgeUnlock
 {
     public function checkAndUnlockBadges($student)
     {
+        $newlyUnlocked = [];
+
         // 👋 Welcome Aboard
-        $this->unlockBadgeIfNotYet($student, 'first_login');
+        $this->unlockBadgeIfNotYet($student, 'first_login', $newlyUnlocked);
 
         // 👣 First Step
         $answeredStoryCount = DB::table('student_answers')
@@ -23,13 +25,35 @@ trait ChecksBadgeUnlock
             ->count('stories.id');
 
         if ($answeredStoryCount >= 1) {
-            $this->unlockBadgeIfNotYet($student, 'read_first_story');
+            $this->unlockBadgeIfNotYet($student, 'read_first_story', $newlyUnlocked);
         }
 
         // 🎓 Folklores Master
-        $totalStories = DB::table('stories')->count();
-        if ($answeredStoryCount == $totalStories) {
-            $this->unlockBadgeIfNotYet($student, 'complete_all_stories');
+        $stories = DB::table('stories')->pluck('id');
+        $completedAllStories = true;
+
+        foreach ($stories as $storyId) {
+            $totalQuestions = DB::table('questions')
+                ->join('stages', 'questions.stage_id', '=', 'stages.id')
+                ->where('stages.story_id', $storyId)
+                ->count();
+
+            $answered = DB::table('student_answers')
+                ->join('questions', 'student_answers.question_id', '=', 'questions.id')
+                ->join('stages', 'questions.stage_id', '=', 'stages.id')
+                ->where('student_answers.student_id', $student->id)
+                ->where('stages.story_id', $storyId)
+                ->distinct('student_answers.question_id')
+                ->count('student_answers.question_id');
+
+            if ($answered < $totalQuestions) {
+                $completedAllStories = false;
+                break;
+            }
+        }
+
+        if ($completedAllStories) {
+            $this->unlockBadgeIfNotYet($student, 'complete_all_stories', $newlyUnlocked);
         }
 
         // ⚡ Fast Learner
@@ -41,20 +65,8 @@ trait ChecksBadgeUnlock
             ->count('question_id');
 
         $totalQuestions = DB::table('questions')->count();
-        if ($correctAnswers === $totalQuestions) {
-            $this->unlockBadgeIfNotYet($student, 'answer_all_correct_first_try');
-        }
-
-        // 🧗 The Climber (Top 10)
-        $topTenIds = DB::table('students')
-            ->select('id')
-            ->orderByDesc('total_score')
-            ->limit(10)
-            ->pluck('id')
-            ->toArray();
-
-        if (in_array($student->id, $topTenIds)) {
-            $this->unlockBadgeIfNotYet($student, 'reach_top_10');
+        if ($totalQuestions > 0 && $correctAnswers === $totalQuestions) {
+            $this->unlockBadgeIfNotYet($student, 'answer_all_correct_first_try', $newlyUnlocked);
         }
 
         // 🎯 Story-based score 100
@@ -67,9 +79,9 @@ trait ChecksBadgeUnlock
             ->groupBy('stories.title')
             ->pluck('total_score', 'title');
 
-        foreach (['Ande Ande Lumut', 'Sangkuriang', 'Timun Mas', 'Roro Jonggrang', 'Cindelaras'] as $title) {
+        foreach (['Ande Ande Lumut', 'Sangkuriang', 'Timun Mas', 'Roro Jonggrang', 'Cindelaras', 'Telaga Sarangan'] as $title) {
             if (($storyScores[$title] ?? 0) >= 100) {
-                $this->unlockBadgeIfNotYet($student, 'score_100_' . strtolower(str_replace(' ', '_', $title)));
+                $this->unlockBadgeIfNotYet($student, 'score_100_' . strtolower(str_replace(' ', '_', $title)), $newlyUnlocked);
             }
         }
 
@@ -82,8 +94,6 @@ trait ChecksBadgeUnlock
             ->get();
 
         $studentId = (int) $student->id;
-
-
         $studentRank = $rankedStudents
             ->pluck('id')
             ->map(fn($id) => (int) $id)
@@ -91,36 +101,52 @@ trait ChecksBadgeUnlock
 
         $studentRank = $studentRank === false ? null : $studentRank + 1;
 
-
-        // Reset all rank badges before applying new
+        // Reset all rank badges (note: reach_top_10 belum dihapus di sini)
         $this->removeBadge($student, 'rank_1_final');
-        $this->removeBadge($student, 'rank_1_all_stories'); // <== ini wajib
+        $this->removeBadge($student, 'rank_1_all_stories');
         $this->removeBadge($student, 'rank_2_final');
         $this->removeBadge($student, 'rank_3_final');
 
+        // Unlock sesuai peringkat
         if ($studentRank === 1) {
-            $this->unlockBadgeIfNotYet($student, 'rank_1_final');
-            $this->unlockBadgeIfNotYet($student, 'rank_1_all_stories');
+            $this->unlockBadgeIfNotYet($student, 'rank_1_final', $newlyUnlocked);
+            $this->unlockBadgeIfNotYet($student, 'rank_1_all_stories', $newlyUnlocked);
         } elseif ($studentRank === 2) {
-            $this->unlockBadgeIfNotYet($student, 'rank_2_final');
+            $this->unlockBadgeIfNotYet($student, 'rank_2_final', $newlyUnlocked);
         } elseif ($studentRank === 3) {
-            $this->unlockBadgeIfNotYet($student, 'rank_3_final');
+            $this->unlockBadgeIfNotYet($student, 'rank_3_final', $newlyUnlocked);
         }
+
+        // 🧗 The Climber (Top 10)
+        $topTenIds = DB::table('students')
+            ->where('total_score', '>', 0)
+            ->orderByDesc('total_score')
+            ->limit(10)
+            ->pluck('id')
+            ->toArray();
+
+        $this->removeBadge($student, 'reach_top_10'); // Baru di sini dihapus (paling akhir)
+
+        if ($student->total_score > 0 && in_array($student->id, $topTenIds)) {
+            $this->unlockBadgeIfNotYet($student, 'reach_top_10', $newlyUnlocked);
+        }
+
+        return $newlyUnlocked;
     }
 
-    protected function unlockBadgeIfNotYet($student, $condition)
+
+    protected function unlockBadgeIfNotYet($student, $condition, &$unlockedList = [])
     {
         $badge = Badge::where('unlock_condition', $condition)->first();
-
         if (!$badge)
             return;
 
-        $existing = $student->badges()
+        $exists = $student->badges()
             ->wherePivot('badge_id', $badge->id)
             ->wherePivot('is_unlocked', true)
             ->exists();
 
-        if (!$existing) {
+        if (!$exists) {
             $student->badges()->syncWithoutDetaching([
                 $badge->id => [
                     'is_unlocked' => true,
@@ -129,6 +155,7 @@ trait ChecksBadgeUnlock
                 ]
             ]);
             Log::info("Badge {$badge->name} unlocked for student {$student->id}");
+            $unlockedList[] = $badge->name;
         }
     }
 

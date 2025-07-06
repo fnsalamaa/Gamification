@@ -29,6 +29,21 @@
             $progress = ($questionIndex + 1) / ($totalQuestions ?: 1) * 100;
         @endphp
 
+        @php
+            $student = auth()->user()->student;
+
+            $studentAnswers = \App\Models\StudentAnswer::where('student_id', $student->id)
+                ->get()
+                ->keyBy('question_id');
+
+            $completedStages = collect($stages)->filter(function ($stage) use ($studentAnswers) {
+                return $stage->questions->every(function ($q) use ($studentAnswers) {
+                    $jawaban = $studentAnswers->get($q->id);
+                    return $jawaban && ($jawaban->is_correct || $jawaban->attempt >= 3);
+                });
+            })->pluck('id')->toArray();
+        @endphp
+
         {{-- 🎮 Game Style Progress Bar --}}
         <div
             class="relative w-full bg-gray-300/50 border border-indigo-600 rounded-xl h-6 overflow-hidden shadow-inner backdrop-blur-sm mb-6">
@@ -42,23 +57,14 @@
 
         {{-- Stage Navigation --}}
         @php
-            $sessionKey = 'completed_stages_' . $story->id;
-            $completedStages = session($sessionKey, []);
-
-            // Tambahkan stage saat ini ke daftar unlocked jika belum ada
-            if (!in_array($stageIndex, $completedStages)) {
-                $completedStages[] = $stageIndex;
-                session([$sessionKey => $completedStages]);
-            }
-
-            // Tentukan maksimum stage yang pernah diselesaikan
-            $maxUnlocked = max($completedStages ?? [0]);
+            $stageIndex = request('stage', 0); // tetap dipakai
         @endphp
+
 
         <div class="flex justify-center gap-4 my-6">
             @foreach ($stages as $index => $stage)
                 @php
-                    $isUnlocked = $index <= $maxUnlocked;
+                    $isUnlocked = in_array($stage->id, $completedStages) || $index == 0;
                     $isActive = $stageIndex == $index;
                 @endphp
 

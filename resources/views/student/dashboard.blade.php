@@ -187,7 +187,51 @@
             <p id="modalBadgeDesc" class="text-sm text-gray-600"></p>
         </div>
     </div>
+
+    @if(session('new_badges'))
+    <div x-data="{ open: true }" x-show="open"
+         x-transition
+         class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white rounded-xl p-6 w-full max-w-md text-center relative shadow-lg">
+            <button @click="open = false"
+                    class="absolute top-2 right-3 text-gray-500 hover:text-red-600 text-xl">&times;</button>
+
+            <h2 class="text-2xl font-bold text-purple-700 mb-2">🎉 Congratulations!</h2>
+            <p class="text-gray-700 mb-4">You just unlocked a new badge:</p>
+
+            <div class="flex flex-col items-center gap-4">
+                @foreach (session('new_badges') as $badge)
+                    @php
+                        $badgeData = $ownedBadges->firstWhere('name', $badge);
+                    @endphp
+
+                    @if($badgeData)
+                    <div class="flex items-center gap-4 bg-purple-50 p-3 rounded-lg shadow-sm w-full">
+                        <img src="{{ asset('storage/' . $badgeData->icon) }}" alt="{{ $badgeData->name }}"
+                             class="w-12 h-12 object-cover rounded-full border-2 border-purple-300">
+                        <div class="text-left">
+                            <p class="text-lg font-semibold text-purple-800">{{ $badgeData->name }}</p>
+                            <p class="text-sm text-gray-600">{{ $badgeData->description }}</p>
+                        </div>
+                    </div>
+                    @else
+                    <li class="text-gray-800 font-semibold">🏅 {{ $badge }}</li>
+                    @endif
+                @endforeach
+            </div>
+
+            <button @click="open = false"
+                    class="mt-6 bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition">
+                Close
+            </button>
+        </div>
+    </div>
+@endif
+
+
 </div>
+
+
 @endsection
 
 @section('scripts')
