@@ -2,6 +2,7 @@
 
 @section('content')
 
+
     @if (session('success'))
         <div class="mt-4 p-4 rounded-lg bg-green-100 border border-green-300 text-green-800 font-semibold">
             ✅ {{ session('success') }}
@@ -11,6 +12,8 @@
             {{ session('error') }}
         </div>
     @endif
+
+    
 
     <div class="max-w-3xl mx-auto px-4 py-8">
 
@@ -70,7 +73,7 @@
 
                 <div class="group text-center">
                     <a href="{{ $isUnlocked ? request()->fullUrlWithQuery(['stage' => $index, 'question' => 0]) : '#' }}" class="block w-20 h-20 rounded-xl transition shadow-md p-2 transform hover:scale-105
-                                                                                                                                                                                                                {{ $isActive
+                                                                                                                                                                                                                                                {{ $isActive
                 ? 'bg-indigo-600 text-white border-2 border-indigo-700'
                 : ($isUnlocked
                     ? 'bg-white text-indigo-700 border border-indigo-300 hover:bg-indigo-100'
@@ -157,6 +160,9 @@
             {{-- ANSWER OPTIONS --}}
             <form method="POST" action="{{ route('student.answer.submit', $question->id) }}" x-data="{ selected: '' }">
                 @csrf
+
+                <input type="hidden" name="stage" value="{{ $stageIndex }}">
+                <input type="hidden" name="question" value="{{ $questionIndex }}">
 
                 <div class="space-y-3">
                     @foreach (['A', 'B', 'C', 'D'] as $opt)

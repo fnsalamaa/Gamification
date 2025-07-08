@@ -94,72 +94,122 @@ class StudentController extends Controller
     }
 
     public function submitAnswer(Request $request, Question $question)
-    {
-        $student = auth()->user()->student;
-        if (!$student) {
-            return back()->with('error', 'Data student tidak ditemukan.');
-        }
-        $studentId = $student->id;
+{
+    $student = auth()->user()->student;
+    if (!$student) {
+        return back()->with('error', 'Data student tidak ditemukan.');
+    }
 
-        // Cek attempt sebelumnya
-        $attempt = StudentAnswer::where('student_id', $studentId)
-            ->where('question_id', $question->id)
-            ->count();
+    $studentId = $student->id;
+    $stageIndex = (int) $request->stage;
+    $questionIndex = (int) $request->question;
+    $selected = $request->selected_option;
 
-        // Cek apakah sudah mencoba 3 kali
-        if ($attempt >= 3) {
-            // Redirect langsung ke soal berikutnya
-            $story = $question->stage->story;
+    // Hitung attempt sekarang
+    $attempt = StudentAnswer::where('student_id', $studentId)
+        ->where('question_id', $question->id)
+        ->count();
+
+    $isCorrect = $selected === $question->correct_answer;
+
+    $score = 0;
+    if ($isCorrect) {
+        $score = match ($attempt) {
+            0 => 5,
+            1 => 3,
+            2 => 1,
+            default => 0,
+        };
+    }
+
+    // Simpan jawaban
+    StudentAnswer::create([
+        'student_id' => $studentId,
+        'question_id' => $question->id,
+        'attempt' => $attempt + 1,
+        'selected_option' => $selected,
+        'is_correct' => $isCorrect,
+        'score_earned' => $score,
+    ]);
+
+    // Update total skor student
+    $totalScore = StudentAnswer::where('student_id', $studentId)->sum('score_earned');
+    Student::where('id', $studentId)->update(['total_score' => $totalScore]);
+
+    // Cek dan unlock badge
+    $this->checkAndUnlockBadges($student);
+
+    // Ambil semua question dari stage ini
+    $currentStage = $question->stage;
+    $questionsInStage = $currentStage->questions;
+    $totalQuestions = $questionsInStage->count();
+    $isLastQuestionInStage = $questionIndex + 1 >= $totalQuestions;
+
+    // Cek apakah semua soal stage ini sudah benar atau dicoba 3x
+    $allAnsweredOrMaxAttempt = $questionsInStage->every(function ($q) use ($studentId) {
+        $jawaban = StudentAnswer::where('student_id', $studentId)
+            ->where('question_id', $q->id)
+            ->orderByDesc('created_at')
+            ->first();
+
+        return $jawaban && ($jawaban->is_correct || $jawaban->attempt >= 3);
+    });
+
+    // Ambil semua stage dari story
+    $story = $currentStage->story;
+    $allStages = $story->stages;
+    $isLastStage = $stageIndex + 1 >= $allStages->count();
+
+    // 🎯 Pesan feedback
+    $msg = '';
+    if ($isCorrect) {
+        $msg = match ($attempt) {
+            0 => "🎉 Great job! You got it right on the first try!\nYou’ve earned 5 points.",
+            1 => "✅ Nice recovery! You got it right on the second try — 3 points!",
+            default => "👍 You made it! Third time’s the charm — you’ve earned 1 point."
+        };
+
+        if (!$isLastQuestionInStage) {
+            // 👉 Next question
             return redirect()->route('student.story.readStory', [
                 'story' => $story->id,
-                'stage' => request('stage'),
-                'question' => request('question') + 1
-            ])->with('error', '❌ Kamu sudah mencoba 3 kali. Lanjut ke soal berikutnya!');
+                'stage' => $stageIndex,
+                'question' => $questionIndex + 1,
+            ])->with('success', $msg);
+        } elseif (!$isLastStage && $allAnsweredOrMaxAttempt) {
+            // 👉 Next stage
+            return redirect()->route('student.story.readStory', [
+                'story' => $story->id,
+                'stage' => $stageIndex + 1,
+                'question' => 0,
+            ])->with('success', $msg);
         }
-
-
-        $selected = $request->selected_option;
-        $isCorrect = $selected === $question->correct_answer;
-
-        $score = 0;
-        if ($isCorrect) {
-            $score = match ($attempt) {
-                0 => 5,
-                1 => 3,
-                2 => 1,
-                default => 0,
-            };
-        }
-
-        StudentAnswer::create([
-            'student_id' => $studentId,
-            'question_id' => $question->id,
-            'attempt' => $attempt + 1,
-            'selected_option' => $selected,
-            'is_correct' => $isCorrect,
-            'score_earned' => $score,
-        ]);
-
-        // 🔄 Update kolom total_score dari semua jawaban
-        $totalScore = StudentAnswer::where('student_id', $studentId)->sum('score_earned');
-        Student::where('id', $studentId)->update(['total_score' => $totalScore]);
-
-        // ✅ Cek dan unlock badge setelah skor diupdate
-        $this->checkAndUnlockBadges($student);
-
-        $msg = '';
-
-        if ($isCorrect) {
-            $msg = "🎉 Yay! Your answer is correct. Let's move on to the next question! Point: $score";
+    } else {
+        if ($attempt === 0) {
+            $msg = "❌ Oops! Not quite right. You still have 2 more tries!";
+        } elseif ($attempt === 1) {
+            $msg = "❌ Almost there! One last try left!";
         } else {
-            if ($attempt >= 2) {
-                $msg = '❌ Incorrect and tried 3 times. Points not awarded.!';
-            } else {
-                $msg = "❌ Wrong answer. (Trial " . ($attempt + 1) . ")";
+            $msg = "❌ That’s okay, 3 chances used. 0 points this time. Let’s move on!";
+            if (!$isLastQuestionInStage) {
+                return redirect()->route('student.story.readStory', [
+                    'story' => $story->id,
+                    'stage' => $stageIndex,
+                    'question' => $questionIndex + 1,
+                ])->with('error', $msg);
+            } elseif (!$isLastStage && $allAnsweredOrMaxAttempt) {
+                return redirect()->route('student.story.readStory', [
+                    'story' => $story->id,
+                    'stage' => $stageIndex + 1,
+                    'question' => 0,
+                ])->with('error', $msg);
             }
         }
-        return back()->with($isCorrect ? 'success' : 'error', $msg);
-
     }
+
+    return back()->with($isCorrect ? 'success' : 'error', $msg);
+}
+
+
 
 }

@@ -32,16 +32,16 @@
 
         <!-- Konten -->
         <div class="w-full md:w-1/2 text-center md:text-left">
-            <h1 class="text-2xl md:text-3xl font-extrabold mb-4 text-amber-800 font-game">ANCESTOR QUEST</h1>
+            <h1 class="text-2xl md:text-3xl font-extrabold mb-4 text-amber-800 font-game">Javanese Ancestral Quest</h1>
 
-            <p class="text-stone-700 mb-6 text-lg font-semibold">Let's Start The Quest Right Now!</p>
+            <p class="text-stone-700 mb-6 text-lg font-semibold">Ready to Discover the Myths?</p>
             <div class="flex flex-col sm:flex-row justify-center md:justify-start gap-4">
                 <a href="{{ route('login') }}"
                     class="bg-amber-700 text-white px-6 py-3 rounded-xl hover:bg-amber-800 shadow-lg transform hover:scale-105 transition-all duration-300">🔐
-                    Login</a>
-                <a href="{{ route('register') }}"
+                    Start the Journey</a>
+                {{-- <a href="{{ route('register') }}"
                     class="bg-yellow-200 text-gray-900 px-6 py-3 rounded-xl hover:bg-yellow-300 shadow-lg transform hover:scale-105 transition-all duration-300">📝
-                    Register</a>
+                    Register</a> --}}
             </div>
         </div>
 
