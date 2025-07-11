@@ -85,6 +85,8 @@ trait ChecksBadgeUnlock
             }
         }
 
+        
+
         // 🏆 Final Leaderboard Ranking
         $rankedStudents = DB::table('students')
             ->leftJoin('student_answers', 'students.id', '=', 'student_answers.student_id')

@@ -88,6 +88,9 @@ Route::prefix('teacher')->middleware(['auth', 'verified', 'role:teacher'])->grou
 
     // Student
     Route::get('/students', [TeacherController::class, 'showAllStudents'])->name('teacher.students.show');
+    Route::get('/student-answer/{id}', [TeacherController::class, 'showStudentAnswerDetail'])->name('teacher.student.answer.detail');
+    Route::get('/student-progress/{id}', [TeacherController::class, 'showStudentProgressDetail'])->name('teacher.student-progress.detail');
+
 
 
     // Halaman  story

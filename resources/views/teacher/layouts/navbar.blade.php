@@ -1,51 +1,56 @@
-<nav class="bg-white border-b border-gray-200 shadow-sm">
-  <div class="max-w-screen-xl mx-auto flex flex-wrap items-center justify-between p-4">
+@php
+  use Illuminate\Support\Facades\Auth;
+@endphp
+
+<nav class="bg-white border-b border-gray-200 z-50">
+  <div class="max-w-screen-xl mx-auto flex flex-wrap items-center justify-between px-4 py-3">
 
     <!-- Logo -->
-    <a href="{{ route('teacher.dashboard') }}" class="flex items-center space-x-3 rtl:space-x-reverse">
-      <img src="{{ asset('storage/welcome/logo3.png') }}" class="h-12 sm:h-14" alt="Logo" />
-      <span class="self-center text-2xl font-semibold whitespace-nowrap text-gray-800">Lores of Java</span>
-    </a>
+    <div class="flex items-center gap-3">
+      <img src="{{ asset('storage/welcome/logo3.png') }}" class="h-10 w-10 object-contain" alt="Logo">
+      <span class="text-amber-800 text-xl font-bold">Lores of Java</span>
+    </div>
 
-    <!-- Hamburger Menu (Mobile) -->
-    <button data-collapse-toggle="navbar-teacher" type="button"
-      class="inline-flex items-center p-2 w-10 h-10 justify-center text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
-      aria-controls="navbar-teacher" aria-expanded="false">
+    <!-- Hamburger Button (Mobile) -->
+    <button data-collapse-toggle="mobile-menu" type="button"
+      class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100"
+      aria-controls="mobile-menu" aria-expanded="false">
       <span class="sr-only">Open main menu</span>
-      <svg class="w-5 h-5" fill="none" viewBox="0 0 17 14" xmlns="http://www.w3.org/2000/svg">
-        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M1 1h15M1 7h15M1 13h15" />
+      <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd"
+          d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM4 14a1 1 0 100 2h12a1 1 0 100-2H4z"
+          clip-rule="evenodd" />
       </svg>
     </button>
 
-    <!-- Menu dan Logout -->
-    <div class="hidden w-full md:flex md:items-center md:w-auto" id="navbar-teacher">
-      <ul
-        class="flex flex-col font-medium mt-4 border border-gray-100 rounded-lg bg-white md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-transparent">
+    <!-- Menu Items -->
+    <div class="hidden w-full md:flex md:w-auto items-center justify-between" id="mobile-menu">
+      <ul class="flex flex-col mt-4 font-medium md:flex-row md:space-x-6 md:mt-0">
         <li>
           <a href="{{ route('teacher.dashboard') }}"
-            class="block py-2 px-3 text-gray-800 hover:text-blue-700 md:p-0">Dashboard</a>
+            class="block py-2 px-3 text-gray-700 rounded md:p-0 hover:text-amber-700">Dashboard</a>
         </li>
         <li>
           <a href="{{ route('teacher.story.index') }}"
-            class="block py-2 px-3 text-gray-800 hover:text-blue-700 md:p-0">Story</a>
+            class="block py-2 px-3 text-gray-700 rounded md:p-0 hover:text-amber-700">Story</a>
         </li>
         <li>
           <a href="{{ route('teacher.students.show') }}"
-            class="block py-2 px-3 text-gray-800 hover:text-blue-700 md:p-0">Student</a>
+            class="block py-2 px-3 text-gray-700 rounded md:p-0 hover:text-amber-700">Student</a>
         </li>
         <li>
           <a href="{{ route('teacher.leaderboard') }}"
-            class="block py-2 px-3 text-gray-800 hover:text-blue-700 md:p-0">Leaderboard</a>
+            class="block py-2 px-3 text-gray-700 rounded md:p-0 hover:text-amber-700">Leaderboard</a>
         </li>
 
         <!-- Logout Mobile -->
-        <li class="md:hidden">
+        <li class="block md:hidden border-t pt-3 mt-3">
           <form action="{{ route('logout') }}" method="POST">
             @csrf
             <button type="submit"
-              class="w-full text-left text-sm bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg mt-2">
-              Log Out
+              class="w-full text-left block px-3 py-2 text-sm text-red-600 hover:bg-red-100">
+              Log out
             </button>
           </form>
         </li>
@@ -53,12 +58,12 @@
     </div>
 
     <!-- Logout Desktop -->
-    <div class="hidden md:flex md:items-center space-x-3">
+    <div class="hidden md:block ml-4">
       <form action="{{ route('logout') }}" method="POST">
         @csrf
         <button type="submit"
-          class="text-sm bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-red-300">
-          Log Out
+          class="text-sm px-4 py-2 text-red-600 hover:bg-red-100 rounded-lg transition">
+          Log out
         </button>
       </form>
     </div>

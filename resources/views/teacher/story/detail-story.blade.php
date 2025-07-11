@@ -3,10 +3,9 @@
 @section('content')
     <div class="container mx-auto mt-8 px-4">
 
-        {{-- Tombol kembali --}}
         <a href="{{ url('/teacher/story') }}"
             class="inline-block mb-6 bg-yellow-700 text-white px-4 py-2 rounded-lg shadow hover:bg-yellow-800 transition">
-            ← Kembali
+            ← Back to Story
         </a>
 
         <h2 class="text-4xl font-extrabold text-yellow-800 mb-4 text-center drop-shadow-md tracking-wide">

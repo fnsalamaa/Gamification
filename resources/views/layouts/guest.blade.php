@@ -22,8 +22,8 @@
     <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-transparent">
         <div>
             <a href="/">
-                <img src="{{ asset('storage/welcome/logo.jpeg') }}" alt="Logo"
-                    class="w-20 h-20 rounded-full ring-2 ring-pink-300 shadow-lg transition duration-300 hover:scale-105 object-cover" />
+                <img src="{{ asset('storage/welcome/logo3.png') }}" alt="Logo"
+                    class="w-20 h-20 rounded-full shadow-lg transition duration-300 hover:scale-105 object-cover" />
             </a>
         </div>
 

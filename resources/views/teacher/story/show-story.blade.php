@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="max-w-screen-xl mx-auto mt-10 px-4">
-    <h2 class="text-3xl font-bold text-yellow-800 mb-6">📚 Story List</h2>
+    <h2 class="text-center text-3xl font-bold text-yellow-800 mb-6">📚 Story List</h2>
 
     <div class="overflow-x-auto">
         <div class="min-w-full inline-block align-middle bg-white rounded-2xl shadow ring-1 ring-gray-200">

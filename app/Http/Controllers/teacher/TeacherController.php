@@ -17,14 +17,14 @@ class TeacherController extends Controller
         $totalStudents = Student::count();
         $totalStories = Story::count();
         $totalQuestions = Question::count();
-        
+
         $latestStories = Story::latest()->take(5)->get();
 
         return view('teacher.dashboard', compact(
             'totalStudents',
             'totalStories',
             'totalQuestions',
-            
+
             'latestStories'
         ));
     }
@@ -98,5 +98,77 @@ class TeacherController extends Controller
             return view('teacher.leaderboard.index', compact('type', 'stories', 'storyScores', 'selectedStoryId'));
         }
     }
+
+    public function studentProgress()
+    {
+        $students = Student::with(['user', 'answers'])->get();
+
+        $progress = $students->map(function ($student) {
+            return [
+                'id' => $student->id,
+                'name' => $student->user->name ?? '-',
+                'answered' => $student->answers->count(),
+                'correct' => $student->answers->where('is_correct', 1)->count(),
+                'score' => $student->answers->sum('score_earned'),
+                'attempt' => $student->answers->pluck('attempt')->unique()->count(),
+            ];
+        });
+
+        return view('teacher.student.student-progress', compact('progress'));
+    }
+
+    public function showStudentProgressDetail($id)
+    {
+        $student = Student::with(['user', 'answers'])->findOrFail($id);
+
+        $studentsWithScores = Student::with('answers')->get()->map(function ($s) {
+            return [
+                'id' => $s->id,
+                'score' => $s->answers->sum('score_earned'),
+            ];
+        })->sortByDesc('score')->values(); // Reset index biar bisa cari ranking
+
+        // Cari ranking student
+        $rank = $studentsWithScores->search(fn($s) => $s['id'] == $student->id) + 1;
+
+        $progress = [
+            'id' => $student->id,
+            'name' => $student->user->name ?? '-',
+            'answered' => $student->answers->count(),
+            'correct' => $student->answers->where('is_correct', 1)->count(),
+            'score' => $student->answers->sum('score_earned'),
+            'rank' => $rank,
+        ];
+
+        return view('teacher.student.student-progress-detail', compact('progress', 'student'));
+    }
+
+
+
+    public function showStudentAnswerDetail($id)
+    {
+        $student = Student::with(['user', 'answers.question.stage.story'])->findOrFail($id);
+
+        $answers = $student->answers
+            ->sortBy(['question_id', 'attempt']) // urutkan berdasarkan question_id lalu attempt
+            ->groupBy(fn($answer) => $answer->question->stage->story->id)
+            ->map(function ($answersByStory) {
+                return $answersByStory->groupBy(fn($answer) => $answer->question->stage->id)
+                    ->map(function ($answersByStage) {
+                        // Di dalam stage, group by question_id agar bisa melihat multiple attempts
+                        return $answersByStage->groupBy('question_id');
+                    });
+            });
+
+        return view('teacher.student.student-answer-detail', [
+            'student' => $student,
+            'groupedAnswers' => $answers
+        ]);
+    }
+
+
+
+
+
 
 }
