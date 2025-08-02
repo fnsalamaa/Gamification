@@ -67,7 +67,7 @@
         <div class="flex justify-center gap-4 my-6">
             @foreach ($stages as $index => $stage)
                 @php
-                    $isUnlocked = in_array($stage->id, $completedStages) || $index == 0;
+                    $isUnlocked = $index === 0 || in_array($stages[$index - 1]->id, $completedStages);
                     $isActive = $stageIndex == $index;
                 @endphp
 

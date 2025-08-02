@@ -22,11 +22,23 @@
 
 
         {{-- Loop stage --}}
+        @php
+            $mainEventCounter = 1;
+        @endphp
+
         @forelse ($story->stages as $stage)
             <div x-data="{ open: false }" class="mb-6 border border-yellow-300 rounded-xl shadow bg-yellow-50 overflow-hidden">
                 <button @click="open = !open"
                     class="w-full text-left px-6 py-4 text-yellow-900 font-semibold flex justify-between items-center">
-                    Stage {{ $stage->order }} - {{ ucfirst($stage->stage_type) }}
+                    🎯
+                    @if ($stage->stage_type === 'opening')
+                        Opening
+                    @elseif ($stage->stage_type === 'main_event')
+                        Main Event {{ $mainEventCounter++ }}
+                    @elseif ($stage->stage_type === 'closure')
+                        Closure
+                    @endif
+
                     <svg :class="{ 'rotate-180': open }" class="w-5 h-5 transition-transform duration-300" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />

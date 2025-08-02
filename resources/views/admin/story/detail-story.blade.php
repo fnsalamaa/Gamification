@@ -29,6 +29,10 @@
         </div>
 
         <!-- TIAP STAGE -->
+        @php
+      $mainEventCounter = 1;
+    @endphp
+
         @foreach ($stages as $stage)
       <div x-data="{ accordionOpen: false }"
       class="mb-6 border border-gray-300 rounded-xl shadow bg-white overflow-hidden">
@@ -36,7 +40,16 @@
       <!-- Dropdown Button -->
       <button @click="accordionOpen = !accordionOpen"
         class="w-full text-left px-6 py-4 text-gray-800 font-semibold flex justify-between items-center">
-        🎯 Stage {{ $stage->order }} - {{ ucfirst($stage->stage_type) }}
+        🎯
+        @if ($stage->stage_type === 'opening')
+      Opening
+      @elseif ($stage->stage_type === 'main_event')
+      Main Event {{ $mainEventCounter++ }}
+      @elseif ($stage->stage_type === 'closure')
+      Closure
+      @endif
+
+
         <svg :class="{ 'rotate-180': accordionOpen }" class="w-5 h-5 transition-transform duration-300"
         fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -205,7 +218,7 @@
       <input type="file" name="questions[{{ $i }}][image]"
         @change="previewUrl{{ $i }} = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : ''"
         class="w-full text-sm">
-        <template x-if="previewUrl{{ $i }}">
+      <template x-if="previewUrl{{ $i }}">
         <img :src="previewUrl{{ $i }}" alt="Preview"
         class="mt-2 w-24 h-auto rounded shadow border border-gray-300 max-w-full">
       </template>

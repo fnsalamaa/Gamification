@@ -72,7 +72,7 @@ class StudentAvatarController extends Controller
             ->first();
 
         if (!$avatar) {
-            return redirect()->back()->with('error', 'Avatar belum tersedia atau belum dibuka.');
+            return redirect()->back()->with('error', 'Avatar is not available or unlocked!');
         }
 
         $student->avatars()->updateExistingPivot(
